@@ -25,6 +25,9 @@
       <a class="navbar-item">
         <router-link to="/campanya">Campanya</router-link>
       </a>
+      <a class="navbar-item">
+        <router-link to="/confrontacions">Confrontacions</router-link>
+      </a>
 
       <div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">

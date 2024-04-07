@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import DefineixCampanya from './../defineixCampanya.vue';
 import Confrontacions from './../confrontacions.vue';
+import Campanya from './../campanya.vue'
 
 Vue.use(VueRouter)
 
@@ -22,6 +23,11 @@ const routes = [
     path: '/defineixCampanya',
     name: 'defineixCampanya',
     component: DefineixCampanya
+  },
+  {
+    path: '/campanya',
+    name: 'campanya',
+    component: Campanya
   },
   {
     path: '/about',

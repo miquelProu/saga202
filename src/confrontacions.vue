@@ -131,9 +131,9 @@ export default {
                 { name: "Jean", id: 2 }
             ],
             bando_B: [
-                { name: "Maria", id: 0 },
-                { name: "Paula", id: 1 },
-                { name: "Montse", id: 2 }
+                { name: "Maria", id: 3 },
+                { name: "Paula", id: 4 },
+                { name: "Montse", id: 5 }
             ],
             batalles_selectables:[
                 {name: "Bienes de valor", id: 0},
@@ -183,6 +183,7 @@ export default {
                 bando_B: self.bando_B[id].id,
                 punts_bando_A: null,
                 punts_bando_B: null,
+                torn: 0,
                 isFinal: false,
             });
             //this.$forceUpdate();
