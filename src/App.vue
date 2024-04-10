@@ -22,8 +22,11 @@
         <router-link to="/defineixCampanya">Defineix Campanya</router-link>
       </a>
 
-      <a class="navbar-item">
-        <router-link to="/campanya">Campanya</router-link>
+      <a class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">Campanya</a>
+        <div class="navbar-dropdown">
+            <router-link class="navbar-item" to="/campanya">Kill em all</router-link>
+        </div>
       </a>
       <a class="navbar-item">
         <router-link to="/confrontacions">Confrontacions</router-link>

@@ -3,7 +3,7 @@
           <div class="container">
               <div class="columns is-gapless">
                   <div class="column is-9">
-                    <div class="title cinzel-regular">Confrontacións Torn: N</div>
+                    <div class="title cinzel-regular">Confrontacións {{campanya}} Torn: {{torn}}</div>
                   </div>
               </div>
           </div>
@@ -76,7 +76,7 @@
                 </div>
                 <div class="column is-3 botons" style="margin-top:30px;">
                     <div class="boto buttons" v-for="(element,idx) in bando_A" :key="idx">
-                        <button class="button" @click="tancar(idx)" :disabled="isDisabled(idx, 'tancar')">
+                        <button class="button" @click="tancar(idx, 0)" :disabled="isDisabled(idx, 'tancar')">
 <!--                            <span class="icon">
                               <font-awesome-icon icon="fa-solid fa-floppy-disk"/>
                             </span>-->
@@ -115,6 +115,7 @@
 
 <script>
 import draggable from "vuedraggable";
+import axios from 'axios';
 
 
 export default {
@@ -125,16 +126,10 @@ export default {
     data: function(){
         return{
             enabled: true,
-            bando_A: [
-                { name: "John", id: 0 },
-                { name: "Joao", id: 1 },
-                { name: "Jean", id: 2 }
-            ],
-            bando_B: [
-                { name: "Maria", id: 3 },
-                { name: "Paula", id: 4 },
-                { name: "Montse", id: 5 }
-            ],
+            bando_A: [],
+            bando_B: [],
+            campanya: '',
+            torn: 0,
             batalles_selectables:[
                 {name: "Bienes de valor", id: 0},
                 {name: "Reclamar el territorio", id: 1},
@@ -151,6 +146,7 @@ export default {
             confrontacions:[],
             dragging: false,
             bando_AClass: '',
+            users:[],
         }
     },
     computed: {
@@ -174,19 +170,20 @@ export default {
             console.log("Future index: " + e.draggedContext);
             console.log(e.draggedContext);
         },
-        tancar: function(id) {
+        tancar: function(id, isFinal, punts_bando_A = null, punts_bando_B = null) {
             let self = this;
             this.confrontacions.push({
                 idx: id, 
                 bando_A: self.bando_A[id].id, 
                 batalla: self.batalles_selected[id].id, 
                 bando_B: self.bando_B[id].id,
-                punts_bando_A: null,
-                punts_bando_B: null,
+                punts_bando_A: punts_bando_A,
+                punts_bando_B: punts_bando_B,
                 torn: 0,
-                isFinal: false,
+                isFinal: (isFinal == 0) ? false : true,
             });
             //this.$forceUpdate();
+
         },
         final(idx){
             for (const conf of this.confrontacions) {
@@ -244,8 +241,43 @@ export default {
             return temp;
         }
     },
-    mounted: function(){
+    async created() {
 
+        let self = this;
+        if (this.$route.params.isNew == 0){
+            const posts = await axios.get(`https://historic.irregularesplanb.com/php/getConfrontacioBtCampAndTorn.php?id=`+this.$route.params.campanya+'&torn='+this.$route.params.torn)
+            if (posts.data) {
+                console.log(posts.data);
+                let count = 0;
+                for (const f of posts.data.confrontacions){
+                    console.log(f.bandoA);
+                    self.bando_A.push(f.bandoA);
+                    self.bando_B.push(f.bandoB);
+
+                    for (const ff of self.batalles_selectables){
+                        if (ff.id == f.id_batalla){
+                            self.batalles_selected.push(ff);
+                        }
+                    } 
+                    self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1);
+                    count ++;
+                }
+                this.torn =posts.data.confrontacions[0].torn;
+                this.campanya = posts.data.campanya;
+            }
+        } else {
+            const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyaById.php?id=`+this.$route.params.campanya)
+            if (posts.data) {
+                console.log(posts.data);
+                this.bando_A = posts.data.bando_A;
+                this.bando_B = posts.data.bando_B;
+            }
+        }
+        
+    },
+    mounted: function(){
+        console.log(this.$route.params.campanya);
+        
     }
 }
 </script>

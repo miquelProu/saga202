@@ -15,9 +15,9 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/confrontacions',
+    path: '/confrontacions/:campanya/:torn/:isNew',
     name: 'confrontacions',
-    component: Confrontacions
+    component: Confrontacions,
   },
   {
     path: '/defineixCampanya',
@@ -40,7 +40,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

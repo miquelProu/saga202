@@ -95,6 +95,7 @@
 
 <script>
 import draggable from "vuedraggable";
+import axios from 'axios';
 
 export default {
     name: 'selecciobando',
@@ -106,14 +107,7 @@ export default {
             enabled: true,
             bando_A: [],
             bando_B: [],
-            users:[
-                { name: "John", id: 0 },
-                { name: "Joao", id: 1 },
-                { name: "Jean", id: 2 },
-                { name: "Maria", id: 3 },
-                { name: "Paula", id: 4 },
-                { name: "Montse", id: 5 }
-            ],
+            users:[],
             dragging: false,
             nRondes: null,
             nom: '',
@@ -129,9 +123,39 @@ export default {
             console.log(e.draggedContext);
         },
         guardar(){
-            console.log(this.bando_A, this.bando_B);
+            let self = this;
             console.log(this.nom, this.nRondes);
+
+            let paramA = '';
+            for (const f of this.bando_A){
+                paramA = paramA + '&bandoA[]=' + f.id;
+            }
+            let paramB = '';
+            for (const m of this.bando_B){
+                paramB = paramB + '&bandoB[]=' + m.id;
+            }
+            console.log(this.bando_A, this.bando_B);
+            console.log(paramA, paramB);
+
+            axios.get('https://historic.irregularesplanb.com/php/setCampanya.php?nom='+this.nom+'&torns='+this.nRondes+paramA+paramB)
+                .then(function(response){
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    // manejar error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // siempre sera executado
+            });
         }
+    },
+    async created() {
+      const posts = await axios.get(`https://historic.irregularesplanb.com/php/users.php`)
+      if (posts.data) {
+        console.log(posts.data);
+        this.users = posts.data;
+      }
     },
     mounted: function(){
 
