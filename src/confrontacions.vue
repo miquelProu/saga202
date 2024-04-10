@@ -170,7 +170,7 @@ export default {
             console.log("Future index: " + e.draggedContext);
             console.log(e.draggedContext);
         },
-        tancar: function(id, isFinal, punts_bando_A = null, punts_bando_B = null) {
+        tancar: function(id, isFinal, punts_bando_A = null, punts_bando_B = null, id_confrontacio=null) {
             let self = this;
             this.confrontacions.push({
                 idx: id, 
@@ -181,8 +181,24 @@ export default {
                 punts_bando_B: punts_bando_B,
                 torn: 0,
                 isFinal: (isFinal == 0) ? false : true,
+                id: id_confrontacio
             });
-            //this.$forceUpdate();
+            console.log("isFinal", isFinal);
+
+            if (isFinal == 0){
+                let params = {
+                        'id_campanya': self.$route.params.campanya,
+                        'id_usuari_A': self.bando_A[id].id,
+                        'id_batalla': self.batalles_selected[id].id, 
+                        'id_usuari_B': self.bando_B[id].id,
+                        'nPunts_A': 0,
+                        'nPunts_B': 0,
+                        'nTorn': self.$route.params.torn,
+                        'isFinal': 0,
+                    };
+
+                this.setTancar(params);
+            }
 
         },
         final(idx){
@@ -239,7 +255,19 @@ export default {
             }
 
             return temp;
-        }
+        },
+
+        async setTancar(params){
+            let text = '?';
+                for (const f of Object.keys(params)){
+                    text = text + '&' + f + '=' + params[f];
+                }
+
+                const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
+                if (posts.data) {
+                    console.log(posts.data);
+                }
+        },
     },
     async created() {
 
@@ -259,7 +287,7 @@ export default {
                             self.batalles_selected.push(ff);
                         }
                     } 
-                    self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1);
+                    self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1, f.id);
                     count ++;
                 }
                 this.torn =posts.data.confrontacions[0].torn;
@@ -271,6 +299,7 @@ export default {
                 console.log(posts.data);
                 this.bando_A = posts.data.bando_A;
                 this.bando_B = posts.data.bando_B;
+                this.torn = this.$route.params.torn;
             }
         }
         

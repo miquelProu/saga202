@@ -9,7 +9,7 @@
         <div class="container">
             <div class="columns">
                 <div class="column is-4" v-for="element in Object.keys(grouped_display)">
-                        <div class="title"><router-link :to="{ name: 'confrontacions', params: { campanya: campanya_id, torn: element, isNew: 0 }}">Torn {{element}}</router-link></div>
+                        <div class="title"><router-link :to="{ name: 'confrontacions', params: { campanya: campanya_id, torn: element, isNew: isNew(grouped_display[element].length)}}">Torn {{element}}</router-link></div>
                         <div v-for="e in grouped_display[element]">
                             <div>{{e.bandoA.name}}::{{e.bandoA.punts}}::{{batalles[e.id_batalla].name}}::{{e.bandoB.punts}}::{{e.bandoB.name}}</div>
                         </div>
@@ -34,6 +34,7 @@ export default {
             nom: '', 
             torns: null, 
             torns_jugats: [],
+            mans_usual: 0, 
 
             grouped_display: [],
             isCalculat: false,
@@ -84,6 +85,9 @@ export default {
             console.log(this.bando_A, this.bando_B);
             console.log(this.nom, this.nRondes);
         },
+        isNew(llarg){
+            return (llarg == this.mans_usual) ? 0 : 2;       
+        },
         calculs(){
             let self = this;
             let pa = 0;
@@ -132,6 +136,9 @@ export default {
 
         this.grouped_display = Object.groupBy(posts.data.confrontacions, ({ torn }) => torn);
         console.log(this.grouped_display);
+        let t = Object.keys(this.grouped_display);
+        this.mans_usual = this.grouped_display[t[0]].length;
+        console.log(this.mans_usual);
         this.calculs();
       }
     },
