@@ -39,10 +39,10 @@
                             <div class="column one-three-fifths">
                                     <div class="field" v-if="existControntacio(idx)">
                                         <p class="control">
-                                            <input 
-                                            class="input is-small" 
-                                            type="text" 
-                                            placeholder="0" 
+                                            <input
+                                            class="input is-small"
+                                            type="text"
+                                            placeholder="0"
                                             v-model="confrontacions[modeel(idx)].punts_bando_A"
                                             :disabled="isDisabled(idx, 'final')">
                                         </p>
@@ -52,8 +52,8 @@
                             <div class="column one-three-fifths">
                                 <div class="field "  v-if="existControntacio(idx)">
                                         <p class="control">
-                                            <input class="input is-small" type="text" placeholder="0" 
-                                            v-model="confrontacions[modeel(idx)].punts_bando_B" 
+                                            <input class="input is-small" type="text" placeholder="0"
+                                            v-model="confrontacions[modeel(idx)].punts_bando_B"
                                             :disabled="isDisabled(idx, 'final')">
                                         </p>
                                 </div>
@@ -108,8 +108,7 @@
                 </div>
             </div>
         </div>
-      <router-view></router-view>
-          </section>
+      </section>
 
 </template>
 
@@ -119,7 +118,7 @@ import axios from 'axios';
 
 
 export default {
-    name: 'campanyes',
+    name: 'confrontacions',
     components: {
       draggable,
     },
@@ -150,7 +149,7 @@ export default {
         }
     },
     computed: {
-        
+
 
     },
     methods: {
@@ -164,7 +163,7 @@ export default {
                     }
                     count++;
             }
-            return temp;    
+            return temp;
         },
         checkMove: function(e) {
             console.log("Future index: " + e.draggedContext);
@@ -173,9 +172,9 @@ export default {
         tancar: function(id, isFinal, punts_bando_A = null, punts_bando_B = null, id_confrontacio=null) {
             let self = this;
             this.confrontacions.push({
-                idx: id, 
-                bando_A: self.bando_A[id].id, 
-                batalla: self.batalles_selected[id].id, 
+                idx: id,
+                bando_A: self.bando_A[id].id,
+                batalla: self.batalles_selected[id].id,
                 bando_B: self.bando_B[id].id,
                 punts_bando_A: punts_bando_A,
                 punts_bando_B: punts_bando_B,
@@ -189,12 +188,13 @@ export default {
                 let params = {
                         'id_campanya': self.$route.params.campanya,
                         'id_usuari_A': self.bando_A[id].id,
-                        'id_batalla': self.batalles_selected[id].id, 
+                        'id_batalla': self.batalles_selected[id].id,
                         'id_usuari_B': self.bando_B[id].id,
                         'nPunts_A': 0,
                         'nPunts_B': 0,
                         'nTorn': self.$route.params.torn,
                         'isFinal': 0,
+                        'isTancat': 1,
                     };
 
                 this.setTancar(params);
@@ -268,11 +268,10 @@ export default {
                     console.log(posts.data);
                 }
         },
-    },
-    async created() {
 
-        let self = this;
-        if (this.$route.params.isNew == 0){
+        async getisFinal(){
+            let self = this;
+
             const posts = await axios.get(`https://historic.irregularesplanb.com/php/getConfrontacioBtCampAndTorn.php?id=`+this.$route.params.campanya+'&torn='+this.$route.params.torn)
             if (posts.data) {
                 console.log(posts.data);
@@ -281,19 +280,22 @@ export default {
                     console.log(f.bandoA);
                     self.bando_A.push(f.bandoA);
                     self.bando_B.push(f.bandoB);
-
+                    console.log("LALA", f);
                     for (const ff of self.batalles_selectables){
                         if (ff.id == f.id_batalla){
                             self.batalles_selected.push(ff);
                         }
-                    } 
-                    self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1, f.id);
-                    count ++;
+                    }
+                    if(f.isFinal == 1) {
+                        self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1, f.id);
+                        count++;
+                    }
                 }
                 this.torn =posts.data.confrontacions[0].torn;
                 this.campanya = posts.data.campanya;
             }
-        } else {
+        },
+        async getisNew(){
             const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyaById.php?id=`+this.$route.params.campanya)
             if (posts.data) {
                 console.log(posts.data);
@@ -301,12 +303,24 @@ export default {
                 this.bando_B = posts.data.bando_B;
                 this.torn = this.$route.params.torn;
             }
+        },
+
+    },
+    created() {
+
+
+        if (this.$route.params.isNew == 0){
+            this.getisFinal();
+        } else if (this.$route.params.isNew == 1) {
+            this.getisNew();
+        } else {
+            this.getisFinal();
         }
-        
+
     },
     mounted: function(){
         console.log(this.$route.params.campanya);
-        
+
     }
 }
 </script>
