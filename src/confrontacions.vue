@@ -194,7 +194,6 @@ export default {
                         'nPunts_B': 0,
                         'nTorn': self.$route.params.torn,
                         'isFinal': 0,
-                        'isTancat': 1,
                     };
 
                 this.setTancar(params);
@@ -286,10 +285,10 @@ export default {
                             self.batalles_selected.push(ff);
                         }
                     }
-                    if(f.isFinal == 1) {
-                        self.tancar(count, 1, f.bandoA.punts * 1, f.bandoB.punts * 1, f.id);
+                    //if(f.isFinal == 1) {
+                        self.tancar(count, f.isFinal, f.bandoA.punts * 1, f.bandoB.punts * 1, f.id);
                         count++;
-                    }
+                    //}
                 }
                 this.torn =posts.data.confrontacions[0].torn;
                 this.campanya = posts.data.campanya;
@@ -315,6 +314,7 @@ export default {
             this.getisNew();
         } else {
             this.getisFinal();
+            this.getisNew();
         }
 
     },
