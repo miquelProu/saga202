@@ -7,7 +7,10 @@
 
 // Update Bulma's global variables
 //$family-sans-serif:  "Cinzel", serif;
+$irrpb: #f1592a;
+$primary: $irrpb; 
 
+ $navbar-item-hover-color : $irrpb;
 
 //@import "node_modules/bulma/bulma.scss";
 @import "../../node_modules/bulma/bulma.sass";

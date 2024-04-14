@@ -194,7 +194,7 @@ export default {
 .tarja {
     text-align: center;
     padding: 10px 20px;
-    border: 1px solid red;
+    border: 1px solid $irrpb;
     margin-top: 5px;
     &:first-child{
         margin-top: 0;

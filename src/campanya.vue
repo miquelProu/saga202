@@ -1,18 +1,32 @@
 <template>
-    <section>
-        <div clqss="container" style="margin-bottom:40px;">
-            <div class="title cinzel-regular">Campanya: {{nom}}</div> 
-            <div class="title cinzel-regular">Bando A: {{punts_bando_A}} Bando B: {{punts_bando_B}}</div>
-            <div class="title cinzel-regular" v-if="isCalculat">Generals: Bando A: {{maxs[0]['jugador']}} {{maxs[0]['punts']}} Bando B: {{maxs[1]['jugador']}} {{maxs[1]['punts']}}</div>
-            <div class="title"><router-link :to="{ name: 'confrontacions', params: { campanya: campanya_id, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
+    <section class="campanya">
+        <div class="container " style="margin-bottom:40px;">
+            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{nom}}</span></div> 
+            <div class="title cinzel-regular is-size-4">Bando A: <span class="is-size-2">{{punts_bando_A}}</span> Bando B: <span class="is-size-2">{{punts_bando_B}}</span></div>
+            <div class="title cinzel-regular is-size-4" v-if="isCalculat">Generals: Bando A: <span class="is-size-2">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</span> Bando B: <span class="is-size-2">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</span></div>
+            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
         </div>
-        <div class="container">
-            <div class="columns">
+        <div class="container confrontacions">
+            <div class="columns is-multiline">
                 <div class="column is-4" v-for="element in Object.keys(grouped_display)">
-                        <div class="title"><router-link :to="{ name: 'confrontacions', params: { campanya: campanya_id, torn: element, isNew: isNew(grouped_display[element].length)}}">Torn {{element}}</router-link></div>
-                        <div v-for="e in grouped_display[element]">
-                            <div>{{e.bandoA.name}}::{{e.bandoA.punts}}::{{batalles[e.id_batalla].name}}::{{e.bandoB.punts}}::{{e.bandoB.name}}</div>
-                        </div>
+                    <table class="table is-striped">
+                        <thead>
+                            <tr>
+                                <td colspan="5" class="has-text-centered">
+                                <router-link :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: element, isNew: isNew(grouped_display[element].length)} }">Torn {{element}}</router-link>
+                                </td>                            
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="e in grouped_display[element]">
+                                <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
+                                <td v-if="e.isFinal == 1">{{e.bandoA.punts}} </td>
+                                <td v-if="e.isFinal == 1">{{batalles[e.id_batalla].name}}</td>
+                                <td v-if="e.isFinal == 1">{{e.bandoB.punts}}</td>
+                                <td v-if="e.isFinal == 1">{{e.bandoB.name}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -41,7 +55,8 @@ export default {
             punts_bando_A: 0,
             punts_bando_B: 0,
             maxs: [],
-            campanya_id: 10,
+            campanya_id: null,
+            id_campanya: null,
             
             bando_A: [],
             bando_B: [],
@@ -127,7 +142,7 @@ export default {
         },
     },
     async created() {
-      const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaId.php?id=10`)
+      const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaId.php?id=` + this.$route.params.id)
       if (posts.data) {
         console.log(posts.data);
         this.nom = posts.data.campanya;
@@ -143,8 +158,8 @@ export default {
       }
     },
     mounted: function(){
-        console.log("CAMPANYA!!");
-        let self = this;
+        console.log("CAMPANYA!!",this.$route);
+        this.id_campanya =  this.$route.params.id;
         /*let order = this.torns_jugats.sort(function(a,b){
             if (a.torn < b.torn){
                 return -1;
@@ -211,6 +226,11 @@ export default {
 
 <style lang="scss">
 @import "./scss/estil.scss";
+.campanya {
+.title a {
+    color: #f1592a;
+}
+}
 
 .bandoA .tarja.selected {
     margin-right: 0;
@@ -240,7 +260,7 @@ export default {
 .tarja {
     text-align: center;
     padding: 10px 20px;
-    border: 1px solid red;
+    border: 1px solid $irrpb;
     margin-top: 5px;
     &:first-child{
         margin-top: 0;
@@ -287,6 +307,13 @@ export default {
         .button{
             margin-bottom: 0;
         }
+    }
+}
+.confrontacions {
+    table thead tr td a {
+        color: $irrpb;
+        font-size: 1.5rem;
+        font-weight: bold;
     }
 }
 </style>
