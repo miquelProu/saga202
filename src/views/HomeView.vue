@@ -20,13 +20,13 @@
                     </div>
                 </div>
                 <div class="tile is-child box">
-                    <p class="title">Generals</p>
-                    <p>Aquí podem posar informació de les campanyes, el General amb més victories, la batalla amb mes punts totals, no sé.... </p>
+                    <p class="title">Últims canvis</p>
+                    <p>Afegit les mission i suport per les partides de Clash of Spears</p>
                 </div>
             </div>
             <div class="tile is-parent">
                 <div class="tile is-child box">
-                    <p class="title">Suports</p>
+                    <p class="title">Generals</p>
                     <p>Aquí podem posar informació de les campanyes, el General amb més victories, la batalla amb mes punts totals, no sé.... </p>
                     <p>Suspendisse varius ligula in molestie lacinia. Maecenas varius eget ligula a sagittis. Pellentesque interdum, nisl nec interdum maximus, augue diam porttitor lorem, et sollicitudin felis neque sit amet erat. Maecenas imperdiet felis nisi, fringilla luctus felis hendrerit sit amet. Aenean vitae gravida diam, finibus dignissim turpis. Sed eget varius ligula, at volutpat tortor.</p>
                     <p>Integer sollicitudin, tortor a mattis commodo, velit urna rhoncus erat, vitae congue lectus dolor consequat libero. Donec leo ligula, maximus et pellentesque sed, gravida a metus. Cras ullamcorper a nunc ac porta. Aliquam ut aliquet lacus, quis faucibus libero. Quisque non semper leo.</p>
