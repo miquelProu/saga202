@@ -1,6 +1,6 @@
 <template>
-    <section>
-        <div clqss="container" style="margin-bottom:40px;">
+    <section class="defineix">
+        <div class="container" style="margin-bottom:40px;">
             <div class="columns">
                 <div class="column is-5 is-offset-1">
 
@@ -114,7 +114,7 @@ export default {
         }
     },
     computed: {
-        
+
 
     },
     methods: {
@@ -204,7 +204,7 @@ export default {
     opacity: 0.5;
     background: #c8ebfb;
 }
-.list-group{
+.defineix .list-group{
     padding-top:30px;
 }
 

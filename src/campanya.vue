@@ -1,7 +1,7 @@
 <template>
     <section class="campanya">
         <div class="container " style="margin-bottom:40px;">
-            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{nom}}</span></div> 
+            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{nom}}</span></div>
             <div class="title cinzel-regular is-size-4">Bando A: <span class="is-size-2">{{punts_bando_A}}</span> Bando B: <span class="is-size-2">{{punts_bando_B}}</span></div>
             <div class="title cinzel-regular is-size-4" v-if="isCalculat">Generals: Bando A: <span class="is-size-2">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</span> Bando B: <span class="is-size-2">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</span></div>
             <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
@@ -9,21 +9,21 @@
         <div class="container confrontacions">
             <div class="columns is-multiline">
                 <div class="column is-4" v-for="element in Object.keys(grouped_display)">
-                    <table class="table is-striped">
+                    <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
                                 <td colspan="5" class="has-text-centered">
                                 <router-link :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: element, isNew: isNew(grouped_display[element].length)} }">Torn {{element}}</router-link>
-                                </td>                            
+                                </td>
                             </tr>
                         </thead>
                         <tbody>
                             <tr v-for="e in grouped_display[element]">
                                 <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
                                 <td v-if="e.isFinal == 1">{{e.bandoA.punts}} </td>
-                                <td v-if="e.isFinal == 1">{{batalles[e.id_batalla].name}}</td>
-                                <td v-if="e.isFinal == 1">{{e.bandoB.punts}}</td>
-                                <td v-if="e.isFinal == 1">{{e.bandoB.name}}</td>
+                                <td v-if="e.isFinal == 1" class="has-text-centered">{{batalles[e.id_batalla].name}}</td>
+                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}</td>
+                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.name}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -45,10 +45,10 @@ export default {
     data: function(){
         return{
             enabled: true,
-            nom: '', 
-            torns: null, 
+            nom: '',
+            torns: null,
             torns_jugats: [],
-            mans_usual: 0, 
+            mans_usual: 0,
 
             grouped_display: [],
             isCalculat: false,
@@ -57,7 +57,7 @@ export default {
             maxs: [],
             campanya_id: null,
             id_campanya: null,
-            
+
             bando_A: [],
             bando_B: [],
             users:[
@@ -101,7 +101,7 @@ export default {
             console.log(this.nom, this.nRondes);
         },
         isNew(llarg){
-            return (llarg == this.mans_usual) ? 0 : 2;       
+            return (llarg == this.mans_usual) ? 0 : 2;
         },
         calculs(){
             let self = this;
@@ -168,7 +168,7 @@ export default {
             } else {
                 return (a.idx < b.idx) ? -1 : 1;
             }
-            
+
         });
         const grouped = Object.groupBy(order, ({ torn }) => torn);
 
@@ -191,7 +191,7 @@ export default {
         let jugador_bando_B = 1;
         let max_bando_B = 0;
         const byUserA = Object.groupBy(order, ({bando_A}) => bando_A);
-        
+
         for (const f of Object.keys(byUserA)){
             let temp = 0;
             let tempB = 0;
@@ -218,8 +218,8 @@ export default {
             }
         }
         this.jugador_bando_B = jugador_bando_B;
-        this.max_bando_B = max_bando_B;      
-        */  
+        this.max_bando_B = max_bando_B;
+        */
     }
 }
 </script>
@@ -270,7 +270,7 @@ export default {
     opacity: 0.5;
     background: #c8ebfb;
 }
-.list-group{
+.campanya .list-group{
     padding-top:30px;
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <section>
+    <section class="afegeix">
         <div clqss="container" style="margin-bottom:40px;">
             <div class="columns">
                 <div class="column is-5 is-offset-1">
@@ -19,13 +19,13 @@
         </div>
 
         <div class="container" style="text-align: center;">
-            
+
                 <div class="title cinzel-regular">Generals</div>
         </div>
         <div class="container">
-            <div class="columns is-multiline">                    
+            <div class="columns is-multiline">
                 <div class="column is-3" v-for="element in users" :key="element.id">
-                
+
                         <div class="tarja">{{ element.name }}</div>
                 </div>
             </div>
@@ -50,7 +50,7 @@ export default {
         }
     },
     computed: {
-        
+
 
     },
     methods: {
@@ -61,7 +61,7 @@ export default {
         guardar(){
             let self = this;
             console.log(this.nom);
-            
+
             axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+this.nom)
                 .then(function(response){
                     console.log(response);
@@ -131,7 +131,7 @@ export default {
     opacity: 0.5;
     background: #c8ebfb;
 }
-.list-group{
+.afegeix .list-group{
     padding-top:30px;
 }
 

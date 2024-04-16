@@ -2,8 +2,8 @@
   <div>
     <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <a class="navbar-item" href="https://https://www.irregularesplanb.com/">
-      <img src="~@/assets/logo_invertit-menu.png" width="90" height="28">
+    <a class="navbar-item" href="https://www.irregularesplanb.com/">
+      <img src="~@/assets/logo_peque2.png" width="32" height="32">
     </a>
 
     <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -18,20 +18,19 @@
       <a class="navbar-item">
         <router-link class="nav-link is-primary" active-class="a" to="/">Home</router-link>
       </a>
+        <a class="navbar-item has-dropdown is-hoverable">
+            <a class="navbar-link">Campanya</a>
+            <div class="navbar-dropdown">
+                <div v-for="c in campanyes">
+                    <router-link class="navbar-item" :to="{name: 'campanya', params: {id: c.id} }">{{c.nom}}</router-link>
+                </div>
+            </div>
+        </a>
       <a class="navbar-item">
         <router-link to="/defineixCampanya">Defineix Campanya</router-link>
       </a>
-
-      <a class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">Campanya</a>
-        <div class="navbar-dropdown">
-          <div v-for="c in campanyes">
-            <router-link class="navbar-item" :to="{name: 'campanya', params: {id: c.id} }">{{c.nom}}</router-link>
-          </div>
-        </div>
-      </a>
       <a class="navbar-item">
-        <router-link to="/afegeix">Generals</router-link>
+        <router-link to="/afegeix">Gestionar Generals</router-link>
       </a>
 
       <div class="navbar-item has-dropdown is-hoverable">
@@ -70,7 +69,7 @@
       </div>
     </div>
   </div>
-</nav> 
+</nav>
     <router-view/>
   </div>
 </template>

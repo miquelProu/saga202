@@ -8,7 +8,7 @@
 // Update Bulma's global variables
 //$family-sans-serif:  "Cinzel", serif;
 $irrpb: #f1592a;
-$primary: $irrpb; 
+$primary: $irrpb;
 
  $navbar-item-hover-color : $irrpb;
 
@@ -18,8 +18,33 @@ $primary: $irrpb;
 
 
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&display=swap');
-//@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@font-face {
+    font-family: 'Colonna MT';
+    src:  url('~@/assets/COLONNA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
+@font-face {
+    font-family: 'Windlass';
+    src:  url('~@/assets/Windlass.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.colonna {
+    font-family: 'Colonna MT', serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.windlass {
+    font-family: 'Windlass', serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
 
 .cinzel-regular {
     font-family: Cinzel, serif;

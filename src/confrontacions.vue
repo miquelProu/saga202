@@ -92,10 +92,18 @@
 
                 </div>
             </div>
+            <div class="columns">
+                <div class="column is-4" style="height: 80px;">
+                    <div class="colonna has-text-centered" style="font-size: 65px;margin-top: -10px;">SAGA</div>
+                </div>
+                <div class="column is-4 is-offset-1" style="height: 80px;">
+                    <div class="windlass has-text-centered" style="font-size: 40px;">CLASH OF SPEARS</div>
+                </div>
+            </div>
             <div class="columns is-mobile">
-                <div class="column is-5 is-offset-2 misio">
+                <div class="column is-4 misio-seleccio">
                     <draggable
-                        :list="batalles_selectables"
+                        :list="selectBatallesByJoc('saga')"
                         group="batalles"
                         class="list-group"
                         ghost-class="ghost"
@@ -103,7 +111,20 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in batalles_selectables" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja" v-for="element in selectBatallesByJoc('saga')" :key="element.id">{{ element.name }}</div>
+                    </draggable>
+                </div>
+                <div class="column is-4 is-offset-1 misio-seleccio">
+                    <draggable
+                        :list="selectBatallesByJoc('clash')"
+                        group="batalles"
+                        class="list-group"
+                        ghost-class="ghost"
+                        @change="checkMove"
+                        @start="dragging = true"
+                        @end="dragging = false"
+                    >
+                        <div class="tarja" v-for="element in selectBatallesByJoc('clash')" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
             </div>
@@ -130,16 +151,21 @@ export default {
             campanya: '',
             torn: 0,
             batalles_selectables:[
-                {name: "Bienes de valor", id: 0},
-                {name: "Reclamar el territorio", id: 1},
-                {name: "Festines y saqueos", id: 2},
-                {name: "Una historia de desafíos", id: 3},
-                {name: "¡Emboscada!", id: 4},
-                {name: "Mantener el botín", id: 5},
-                {name: "Desacratización", id: 6},
-                {name: "Vieja disputa", id: 7},
-                {name: "El cruce", id: 8},
-                {name: "Cambio de planes", id: 9},
+                {name: "Bienes de valor", id: 0, joc: 'saga'},
+                {name: "Reclamar el territorio", id: 1, joc: 'saga'},
+                {name: "Festines y saqueos", id: 2, joc: 'saga'},
+                {name: "Una historia de desafíos", id: 3, joc: 'saga'},
+                {name: "¡Emboscada!", id: 4, joc: 'saga'},
+                {name: "Mantener el botín", id: 5, joc: 'saga'},
+                {name: "Desacratización", id: 6, joc: 'saga'},
+                {name: "Vieja disputa", id: 7, joc: 'saga'},
+                {name: "El cruce", id: 8, joc: 'saga'},
+                {name: "Cambio de planes", id: 9, joc: 'saga'},
+                {name: "¡Esta es mi tierra!", id: 10, joc: 'clash'},
+                {name: "Forrajeo", id: 11, joc: 'clash'},
+                {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
+                {name: "Proyección de fuerza", id: 13, joc: 'clash'},
+                {name: "Rescate", id: 14, joc: 'clash'},
             ],
             batalles_selected:[],
             confrontacions:[],
@@ -154,6 +180,11 @@ export default {
 
     },
     methods: {
+        selectBatallesByJoc(joc){
+            return this.batalles_selectables.filter(function( obj ) {
+                return obj.joc === joc ;
+            });
+        },
         modeel(idx){
             let temp = 0;
             let count = 0;
@@ -167,8 +198,13 @@ export default {
             return temp;
         },
         checkMove: function(e) {
-            console.log("Future index: " + e.draggedContext);
-            console.log(e.draggedContext);
+            console.log("Future index: " + e);
+            console.log(e, Object.keys(e)[0]);
+            if (Object.keys(e)[0] === "added") {
+                console.log("ADDED", e.added.element.id);
+                this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
+            }
+
         },
         tancar: function(id, procedencia, isFinal = false, punts_bando_A = null, punts_bando_B = null, id_confrontacio=null) {
             let self = this;
@@ -329,7 +365,7 @@ export default {
             this.torn = this.$route.params.torn;
         },
         async getisNew(){
-            
+
             const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyaById.php?id=`+this.$route.params.campanya_id)
             if (posts.data) {
                 this.getisNewProcess(posts.data);
@@ -378,7 +414,7 @@ export default {
                 return obj.id !== id ;
             });
             console.log("EXTREURE", coleccio);
-            return coleccio;;
+            return coleccio;
         },
 
     },
@@ -390,7 +426,7 @@ export default {
         } else if (this.$route.params.isNew == 1) {
             this.getisNew();
         } else {
-            this.esperant(true);   
+            this.esperant(true);
         }
 
     },
@@ -454,6 +490,10 @@ export default {
 }
 .list-group{
     padding-top:30px;
+}
+
+.misio-seleccio .list-group{
+    padding-top: 0;
 }
 
 .bandoA {
