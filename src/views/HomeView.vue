@@ -15,7 +15,7 @@
             <div class="tile is-4 is-vertical is-parent">
                 <div class="tile is-child box">
                     <p class="title">Campanyes</p>
-                    <div v-for="c in campanyes" class="has-text-centered">
+                    <div v-for="c in getCampanyes" class="has-text-centered">
                         <router-link class="has-text-centered" style="color: #F1592AFF;" :to="{name: 'campanya', params: {id: c.id} }">{{c.nom}}</router-link>
                     </div>
                 </div>
@@ -44,6 +44,7 @@
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios';
+import {mapGetters} from "vuex";
 
 export default {
     name: 'HomeView',
@@ -53,15 +54,10 @@ export default {
             campanyes: []
         };
     },
-    async created() {
-        let self = this;
-        const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyes.php`)
-        if (posts.data) {
-            console.log(posts.data);
-            for (const f of posts.data){
-                self.campanyes.push(f);
-            }
-        }
+    computed: {
+        ...mapGetters({
+            getCampanyes: 'getCampanyes'
+        }),
     },
     mounted: function(){
         console.log("HOLA HOME");

@@ -76,7 +76,7 @@
                 </div>
                 <div class="column is-4 is-offset-1">
                     <draggable
-                        :list="users"
+                        :list="getUsers"
                         group="users"
                         :disabled="false"
                         class="list-group"
@@ -85,7 +85,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in users" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja" v-for="element in getUsers" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
             </div>
@@ -95,10 +95,11 @@
 
 <script>
 import draggable from "vuedraggable";
-import axios from 'axios';
+//import axios from 'axios';
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-    name: 'selecciobando',
+    name: 'definirCampanya',
     components: {
       draggable,
     },
@@ -107,17 +108,22 @@ export default {
             enabled: true,
             bando_A: [],
             bando_B: [],
-            users:[],
+            //users:[],
             dragging: false,
             nRondes: null,
             nom: '',
         }
     },
     computed: {
-
-
+        ...mapGetters({
+            getUsers: 'getUsers'
+        }),
     },
     methods: {
+        ...mapActions({
+            getUsersFromDB: 'getUsersFromDB',
+            saveCampaya: 'saveCampaya',
+        }),
         checkMove: function(e) {
             console.log("Future index: " + e.draggedContext);
             console.log(e.draggedContext);
@@ -125,40 +131,21 @@ export default {
         guardar(){
             let self = this;
             console.log(this.nom, this.nRondes);
-
-            let paramA = '';
-            for (const f of this.bando_A){
-                paramA = paramA + '&bandoA[]=' + f.id;
-            }
-            let paramB = '';
-            for (const m of this.bando_B){
-                paramB = paramB + '&bandoB[]=' + m.id;
-            }
-            console.log(this.bando_A, this.bando_B);
-            console.log(paramA, paramB);
-
-            axios.get('https://historic.irregularesplanb.com/php/setCampanya.php?nom='+this.nom+'&torns='+this.nRondes+paramA+paramB)
-                .then(function(response){
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    // manejar error
-                    console.log(error);
-                })
-                .finally(function () {
-                    // siempre sera executado
-            });
+            let obj = {
+                nom: self.nom,
+                nRondes: self.nRondes,
+                bando_A: self.bando_A,
+                bando_B: self.bando_B
+            };
+            this.saveCampaya(obj);
         }
     },
-    async created() {
-      const posts = await axios.get(`https://historic.irregularesplanb.com/php/users.php`)
-      if (posts.data) {
-        console.log(posts.data);
-        this.users = posts.data;
-      }
-    },
     mounted: function(){
-
+        console.log("HOLS DEFINIR CAMAPANYA");
+        this.getUsersFromDB().then(() => {
+            console.log("GET USERS FROM DB TROUGHT THE STORE");
+            console.log(this.getUsers);
+        });
     }
 }
 </script>

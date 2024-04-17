@@ -21,7 +21,7 @@
         <a class="navbar-item has-dropdown is-hoverable">
             <a class="navbar-link">Campanya</a>
             <div class="navbar-dropdown">
-                <div v-for="c in campanyes">
+                <div v-for="c in getCampanyes">
                     <router-link class="navbar-item" :to="{name: 'campanya', params: {id: c.id} }">{{c.nom}}</router-link>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
 
 <script>
-import axios from 'axios'
+import { mapGetters, mapActions } from 'vuex'
 
 
   export default {
@@ -84,21 +84,26 @@ import axios from 'axios'
     components: {
     },
     data(){
-      return{
+        return{
         campanyes: []
-      };
+        };
     },
-     async created() {
-      let self = this;
-      const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyes.php`)
-      if (posts.data) {
-        console.log(posts.data);
-        for (const f of posts.data){
-            self.campanyes.push(f);
-        }
-      }
+    computed: {
+        ...mapGetters({
+            getCampanyes: 'getCampanyes'
+        }),
     },
-    mounted: function(){}
+    methods: {
+        ...mapActions({
+            getCampanyesFromDB: 'getCampanyesFromDB'
+        }),
+    },
+    mounted: function(){
+        this.getCampanyesFromDB().then(() => {
+            console.log("GET CAMPANYES FROM DB TROUGHT THE STORE");
+            console.log(this.getCampanyes);
+        });
+    }
   };
 
 </script>

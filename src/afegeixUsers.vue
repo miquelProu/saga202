@@ -24,9 +24,8 @@
         </div>
         <div class="container">
             <div class="columns is-multiline">
-                <div class="column is-3" v-for="element in users" :key="element.id">
-
-                        <div class="tarja">{{ element.name }}</div>
+                <div class="column is-3" v-for="element in getUsers" :key="element.id">
+                    <div class="tarja">{{ element.name }}</div>
                 </div>
             </div>
         </div>
@@ -34,7 +33,9 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
+
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'afegeixUsers',
@@ -42,50 +43,36 @@ export default {
     },
     data: function(){
         return{
-            enabled: true,
-            users:[],
-            dragging: false,
-            nRondes: null,
+            //enabled: true,
+            //users:[],
+            //dragging: false,
+            //nRondes: null,
             nom: '',
         }
     },
     computed: {
-
-
+        ...mapGetters({
+            getUsers: 'getUsers'
+        }),
     },
     methods: {
-        checkMove: function(e) {
-            console.log("Future index: " + e.draggedContext);
-            console.log(e.draggedContext);
-        },
+        ...mapActions({
+            getUsersFromDB: 'getUsersFromDB',
+            saveUser: 'saveUser',
+        }),
         guardar(){
             let self = this;
             console.log(this.nom);
-
-            axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+this.nom)
-                .then(function(response){
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    // manejar error
-                    console.log(error);
-                })
-                .finally(function () {
-                    // siempre sera executado
-            });
-            const max = Math.max(...self.users.map(o => parseInt(o.id)));
-            this.users.push({id: max +1, name: this.nom});
+            this.saveUser(this.nom);
         }
     },
-    async created() {
-      const posts = await axios.get(`https://historic.irregularesplanb.com/php/users.php`)
-      if (posts.data) {
-        console.log(posts.data);
-        this.users = posts.data;
-      }
-    },
-    mounted: function(){
 
+    mounted: function(){
+        console.log("HOLA AFEGEIX USERS");
+        this.getUsersFromDB().then(() => {
+            console.log("GET USERS FROM DB TROUGHT THE STORE");
+            console.log(this.getUsers);
+        });
     }
 }
 </script>
