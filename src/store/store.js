@@ -24,6 +24,8 @@ export default new Vuex.Store({
     state:{
         users: [],
         campanyes: [],
+        campanyaActual: {},
+        confrontacions: [],
     },
     getters: {
         getUsers(state){
@@ -32,8 +34,11 @@ export default new Vuex.Store({
         getCampanyes(state) {                    // Get Campanyes
             return state.campanyes;
         },
-        getLastCampanyaId(state){
-            return Math.max(...state.campanyes.map(o => parseInt(o.id)));
+        getConfrontacions(state){
+            return state.confrontacions;
+        },
+        getCampanyaActual(state){
+            return state.campanyaActual;
         },
     },
     mutations:{
@@ -43,11 +48,17 @@ export default new Vuex.Store({
         populateCampanyes(state, campanyes) {   //Mutation Campanyes
             state.campanyes = campanyes;
         },
+        populateConfrontacions(state, confrontacions){
+            state.confrontacions = confrontacions;
+        },
         pushCampanya(state, campanya){
             state.campanyes.push(campanya);
         },
         pushUser(state, user){
             state.users.push(user);
+        },
+        setCampanyaActual(state, actual){
+            state.campanyaActual = actual;
         },
     },
     actions:{
@@ -77,6 +88,16 @@ export default new Vuex.Store({
             }
 
 
+        },
+        async getConfrontacionsByCampanyaIdFromDB({commit, state}, campanyaId){
+            if (state.campanyaActual && campanyaId != state.campanyaActual.id){
+                const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaId.php?id=` + campanyaId)
+                if (posts.data) {
+                    console.log("CALL AJAX CONFRONTACIONS BY CAMPANAYA ID", posts.data);
+                    commit('populateConfrontacions', posts.data.confrontacions);
+                    commit('setCampanyaActual', {id: posts.data.id, nom: posts.data.campanya});
+                }
+            }
         },
         async getCampanyesFromDB({commit, state}){
             if (state.campanyes.length == 0) {

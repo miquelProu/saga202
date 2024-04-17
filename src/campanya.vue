@@ -1,10 +1,10 @@
 <template>
     <section class="campanya">
         <div class="container " style="margin-bottom:40px;">
-            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{nom}}</span></div>
+            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
             <div class="title cinzel-regular is-size-4">Bando A: <span class="is-size-2">{{punts_bando_A}}</span> Bando B: <span class="is-size-2">{{punts_bando_B}}</span></div>
             <div class="title cinzel-regular is-size-4" v-if="isCalculat">Generals: Bando A: <span class="is-size-2">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</span> Bando B: <span class="is-size-2">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</span></div>
-            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
+            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
         </div>
         <div class="container confrontacions">
             <div class="columns is-multiline">
@@ -13,7 +13,7 @@
                         <thead>
                             <tr>
                                 <td colspan="5" class="has-text-centered">
-                                <router-link :to="{ name: 'confrontacions', params: { campanya_id: id_campanya, torn: element, isNew: isNew(grouped_display[element].length)} }">Torn {{element}}</router-link>
+                                <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element, isNew: isNew(element)} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
                         </thead>
@@ -34,21 +34,15 @@
 </template>
 
 <script>
-import draggable from "vuedraggable";
-import axios from 'axios';
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'campanya',
     components: {
-      draggable,
     },
     data: function(){
         return{
-            enabled: true,
-            nom: '',
             torns: null,
-            torns_jugats: [],
-            mans_usual: 0,
 
             grouped_display: [],
             isCalculat: false,
@@ -56,65 +50,60 @@ export default {
             punts_bando_B: 0,
             maxs: [],
             campanya_id: null,
-            id_campanya: null,
 
             bando_A: [],
             bando_B: [],
-            users:[
-                /*{ name: "John", id: 0 },
-                { name: "Joao", id: 1 },
-                { name: "Jean", id: 2 },
-                { name: "Maria", id: 3 },
-                { name: "Paula", id: 4 },
-                { name: "Montse", id: 5 }*/
-            ],
             batalles:[
-                {name: "Bienes de valor", id: 0},
-                {name: "Reclamar el territorio", id: 1},
-                {name: "Festines y saqueos", id: 2},
-                {name: "Una historia de desafíos", id: 3},
-                {name: "¡Emboscada!", id: 4},
-                {name: "Mantener el botín", id: 5},
-                {name: "Desacratización", id: 6},
-                {name: "Vieja disputa", id: 7},
-                {name: "El cruce", id: 8},
-                {name: "Cambio de planes", id: 9},
+                {name: "Bienes de valor", id: 0, joc: 'saga'},
+                {name: "Reclamar el territorio", id: 1, joc: 'saga'},
+                {name: "Festines y saqueos", id: 2, joc: 'saga'},
+                {name: "Una historia de desafíos", id: 3, joc: 'saga'},
+                {name: "¡Emboscada!", id: 4, joc: 'saga'},
+                {name: "Mantener el botín", id: 5, joc: 'saga'},
+                {name: "Desacratización", id: 6, joc: 'saga'},
+                {name: "Vieja disputa", id: 7, joc: 'saga'},
+                {name: "El cruce", id: 8, joc: 'saga'},
+                {name: "Cambio de planes", id: 9, joc: 'saga'},
+                {name: "¡Esta es mi tierra!", id: 10, joc: 'clash'},
+                {name: "Forrajeo", id: 11, joc: 'clash'},
+                {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
+                {name: "Proyección de fuerza", id: 13, joc: 'clash'},
+                {name: "Rescate", id: 14, joc: 'clash'},
             ],
-            dragging: false,
             nRondes: null,
             punts:[],
+            mans_usual: 0,
         }
     },
     computed: {
-        isOrdered(){
-            return (this.ordered.length > 0) ? true : false;
-        },
-
+        ...mapGetters({
+            getConfrontacions: 'getConfrontacions',
+            getCampanyaActual:'getCampanyaActual'
+        }),
     },
     methods: {
-        checkMove: function(e) {
-            console.log("Future index: " + e.draggedContext);
-            console.log(e.draggedContext);
-        },
-        guardar(){
-            console.log(this.bando_A, this.bando_B);
-            console.log(this.nom, this.nRondes);
-        },
-        isNew(llarg){
-            return (llarg == this.mans_usual) ? 0 : 2;
+        ...mapActions({
+            getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
+        }),
+        isNew(e){
+            let acabats = this.grouped_display[e].filter(function( obj ) {
+                return obj.isFinal === "1" ;
+            });
+
+            return (acabats.length === this.mans_usual) ? 0 : 2;
         },
         calculs(){
             let self = this;
             let pa = 0;
             let pb = 0;
-            for (const f of this.torns_jugats){
+            for (const f of this.getConfrontacions){
                 self.punts_bando_A = self.punts_bando_A + parseInt(f.bandoA.punts);
                 self.punts_bando_B = self.punts_bando_B + parseInt(f.bandoB.punts);
             }
 
-            const byUserA = Object.groupBy(this.torns_jugats, ({bandoA}) => bandoA.name);
+            const byUserA = Object.groupBy(this.getConfrontacions, ({bandoA}) => bandoA.name);
             this.maxs.push(this.calculBando(byUserA, 'bandoA'));
-            const byUserB = Object.groupBy(this.torns_jugats, ({bandoB}) => bandoB.name);
+            const byUserB = Object.groupBy(this.getConfrontacions, ({bandoB}) => bandoB.name);
             console.log(byUserB);
             this.maxs.push(this.calculBando(byUserB, 'bandoB'));
             this.isCalculat = true;
@@ -141,85 +130,23 @@ export default {
             return {'jugador': jugador_bando_A, 'punts': max_bando_A} ;
         },
     },
-    async created() {
-      const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaId.php?id=` + this.$route.params.id)
-      if (posts.data) {
-        console.log(posts.data);
-        this.nom = posts.data.campanya;
-        this.torns = posts.data.torns;
-        this.torns_jugats = posts.data.confrontacions;
-
-        this.grouped_display = Object.groupBy(posts.data.confrontacions, ({ torn }) => torn);
-        console.log(this.grouped_display);
-        let t = Object.keys(this.grouped_display);
-        this.mans_usual = this.grouped_display[t[0]].length;
-        console.log(this.mans_usual);
-        this.calculs();
-      }
-    },
     mounted: function(){
+        let self = this;
         console.log("CAMPANYA!!",this.$route);
-        this.id_campanya =  this.$route.params.id;
-        /*let order = this.torns_jugats.sort(function(a,b){
-            if (a.torn < b.torn){
-                return -1;
-            } else if (a.torn > b.torn){
-                return 1;
-            } else {
-                return (a.idx < b.idx) ? -1 : 1;
-            }
+        this.campanya_id =  this.$route.params.id;
 
+        this.getConfrontacionsByCampanyaIdFromDB(this.campanya_id).then(()=>{
+            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getConfrontacions);
+
+            self.grouped_display = Object.groupBy(self.getConfrontacions, ({ torn }) => torn);
+            console.log(this.grouped_display);
+
+            let t = Object.keys(this.grouped_display);
+            self.mans_usual = self.grouped_display[t[0]].length;
+            console.log("MAns USUAL", self.mans_usual);
+
+            self.calculs();
         });
-        const grouped = Object.groupBy(order, ({ torn }) => torn);
-
-        for (const k in Object.keys(grouped)){
-            self.ordered.push(grouped[k]);
-        }
-
-        // Punts per banda
-        let punts_bando_A = 0;
-        let punts_bando_B = 0;
-        for (const o of order){
-            punts_bando_A = punts_bando_A + o.punts_bando_A;
-            punts_bando_B = punts_bando_B + o.punts_bando_B;
-        }
-        this.punts_bando_A = punts_bando_A;
-        this.punts_bando_B = punts_bando_B;
-
-        let jugador_bando_A = 1;
-        let max_bando_A = 0;
-        let jugador_bando_B = 1;
-        let max_bando_B = 0;
-        const byUserA = Object.groupBy(order, ({bando_A}) => bando_A);
-
-        for (const f of Object.keys(byUserA)){
-            let temp = 0;
-            let tempB = 0;
-            for (const ff of byUserA[f]){
-                temp = temp + ff.punts_bando_A;
-            }
-            if (temp > max_bando_A){
-                jugador_bando_A = byUserA[f][0]['bando_A'];
-                max_bando_A = temp;
-            }
-        }
-        this.jugador_bando_A = jugador_bando_A;
-        this.max_bando_A = max_bando_A;
-
-        const byUserB = Object.groupBy(order, ({bando_B}) => bando_B);
-        for (const f of Object.keys(byUserB)){
-            let temp = 0;
-            for (const ff of byUserB[f]){
-                temp = temp + ff.punts_bando_B;
-            }
-            if (temp > max_bando_B){
-                jugador_bando_B = byUserA[f][0]['bando_B'];
-                max_bando_B = temp;
-            }
-        }
-        this.jugador_bando_B = jugador_bando_B;
-        this.max_bando_B = max_bando_B;
-        */
     }
 }
 </script>
