@@ -17,6 +17,35 @@ user :{
     id: 0,
     nom: ''
 }
+
+confrontacions Component: {
+    bando_A:0,
+    bando_B:3,
+    batalla:4,
+    idx:0,
+    isFinal:false,
+    punts_bando_A:null,
+    punts_bando_B:null,
+    torn:0
+    }
+
+Confrontacions Vuex: {
+    bandoA: {
+        id:"1"
+        name:"Joan"
+        punts:"15"
+    }
+    bandoB: {
+        id:"1"
+        name:"Joan"
+        punts:"15"
+    }
+id:"4"
+id_batalla:"4"
+isFinal:"1"
+torn:"2"
+}
+
 */
 
 
@@ -26,6 +55,8 @@ export default new Vuex.Store({
         campanyes: [],
         campanyaActual: {},
         confrontacions: [],
+        confrontacioTorn: 0,
+        campanyaActualUsers: [],
     },
     getters: {
         getUsers(state){
@@ -40,6 +71,12 @@ export default new Vuex.Store({
         getCampanyaActual(state){
             return state.campanyaActual;
         },
+        getConfrontacionsByTorn(state){
+            return state.confrontacions.filter(obj => obj.torn === state.confrontacioTorn);
+        },
+        getUsersByCampanyaActual(state){
+            return state.campanyaActualUsers;
+        },
     },
     mutations:{
         populateUSers(state, users){
@@ -51,17 +88,32 @@ export default new Vuex.Store({
         populateConfrontacions(state, confrontacions){
             state.confrontacions = confrontacions;
         },
+        populateCampanyaUsers(state, users){
+            state.campanyaActualUsers = users;
+        },
         pushCampanya(state, campanya){
             state.campanyes.push(campanya);
         },
         pushUser(state, user){
             state.users.push(user);
         },
+        pushConfrontacio(state, confrontacio){
+            state.confrontacions.push(confrontacio);
+        },
         setCampanyaActual(state, actual){
             state.campanyaActual = actual;
         },
+        setConfrontacioTorn(state, torn){
+            state.confrontacioTorn = torn;
+        },
     },
     actions:{
+        pushConfrontacio({commit}, confrontacio){
+            commit('pushConfrontacio', confrontacio);
+        },
+        setConfrontacioTorn({commit}, torn){
+            commit('setConfrontacioTorn', torn);
+        },
         async saveUser({commit, state}, nom){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+nom);
             if(posts.data){
@@ -95,7 +147,7 @@ export default new Vuex.Store({
                 if (posts.data) {
                     console.log("CALL AJAX CONFRONTACIONS BY CAMPANAYA ID", posts.data);
                     commit('populateConfrontacions', posts.data.confrontacions);
-                    commit('setCampanyaActual', {id: posts.data.id, nom: posts.data.campanya});
+                    commit('setCampanyaActual', {id: campanyaId, nom: posts.data.campanya});
                 }
             }
         },
@@ -122,5 +174,14 @@ export default new Vuex.Store({
                 }
             }
         },
+        async getUsuarisByCampanyaIdFromDB({commit, state}, campanyaId){
+            let temp = [];
+            const posts = await axios.get(`https://historic.irregularesplanb.com/php/getUsuarisByCampanyaId.php?id=` + campanyaId);
+            if (posts.data) {
+                console.log("CALL USERS BY CAMPANYA AJAX", posts.data);
+                commit('populateCampanyaUsers', posts.data);
+            }
+        },
+
     }
 });

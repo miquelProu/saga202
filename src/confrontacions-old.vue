@@ -458,15 +458,6 @@ export default {
         padding-top: 7px;
         padding-bottom: 7px;
     }
-    &.not-selected {
-        padding-top: 10px;
-        padding-bottom: 10px;
-    }
-
-    input {
-            text-align: center;
-        }
-
     &.columns.is-gapless {
         margin-bottom: 5px !important;
     }

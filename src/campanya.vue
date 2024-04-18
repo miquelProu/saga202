@@ -78,12 +78,14 @@ export default {
     computed: {
         ...mapGetters({
             getConfrontacions: 'getConfrontacions',
-            getCampanyaActual:'getCampanyaActual'
+            getCampanyaActual:'getCampanyaActual',
+            getUsersByCampanyaActual: 'getUsersByCampanyaActual',
         }),
     },
     methods: {
         ...mapActions({
             getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
+            getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
         }),
         isNew(e){
             let acabats = this.grouped_display[e].filter(function( obj ) {
@@ -146,6 +148,10 @@ export default {
             console.log("MAns USUAL", self.mans_usual);
 
             self.calculs();
+        });
+
+        this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
+            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getUsersByCampanyaActual);
         });
     }
 }
