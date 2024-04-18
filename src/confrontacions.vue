@@ -282,11 +282,27 @@ export default {
             }
         },
         final(idx){
+            let id = 0;
+            let pA = 0;
+            let pB = 0;
+
             for (const conf of this.confrontacions) {
-                    if (conf.idx == idx){
-                        conf.isFinal = true;
-                    }
+                if (conf.idx == idx){
+                    conf.isFinal = true;
+                    console.log(conf);
+                    id = parseInt(conf.id);
+                    pA = parseInt(conf.punts_bando_A);
+                    pB = parseInt(conf.punts_bando_B);
                 }
+            }
+
+            this.setFinal(id, pA, pB);
+        },
+        async setFinal(id, pA, pB){
+            const posts = await axios.get('https://historic.irregularesplanb.com/php/updateConfrontacioFinal.php?id='+id+'&pA='+pA+'&pB='+pB);
+            if (posts.data) {
+                console.log("UPDATE FINAL!!", posts.data);
+            }
         },
         isSelected: function(banda, id){
             let self = this;

@@ -108,6 +108,9 @@ export default new Vuex.Store({
         },
     },
     actions:{
+        updateFinalConfrontacio({commit}, obj){
+
+        },
         pushConfrontacio({commit}, confrontacio){
             commit('pushConfrontacio', confrontacio);
         },
