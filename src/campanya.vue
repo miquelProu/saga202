@@ -36,6 +36,12 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 
+/**
+ * TODO: Mirar si el getUsuarisByCampanyaIdFromDB del final de la carrega servei per algo
+ * o ens apanyem amb el que ja tenim. Els users han de venir de les confrontacions, i sinó
+ * n'hi han, no els calen els noms aquí
+ * */
+
 export default {
     name: 'campanya',
     components: {
@@ -73,6 +79,15 @@ export default {
             nRondes: null,
             punts:[],
             mans_usual: 0,
+        }
+    },
+    watch: {
+        $route(to, from) {
+      // react to route changes...
+            console.log(to, from);
+            this.campanya_id =  this.$route.params.id;
+            this.start();
+        
         }
     },
     computed: {
@@ -131,28 +146,43 @@ export default {
             }
             return {'jugador': jugador_bando_A, 'punts': max_bando_A} ;
         },
+        start(){
+            let self = this;
+            this.getConfrontacionsByCampanyaIdFromDB(this.campanya_id).then(()=>{
+            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getConfrontacions);
+
+            console.log("campanya actual", self.getCampanyaActual);
+            console.log("campanya actual confrontacions", self.getConfrontacions);
+
+            if (self.getConfrontacions.length > 0) {
+                self.grouped_display = Object.groupBy(self.getConfrontacions, ({ torn }) => torn);
+                console.log(this.grouped_display);
+
+                let t = Object.keys(this.grouped_display);
+                //self.mans_usual = self.grouped_display[t[0]].length;
+                //console.log("MAns USUAL", self.mans_usual);
+            } else {
+                self.grouped_display = [];
+            }
+            this.isCalculat = false;
+            this.punts_bando_A = 0;
+            this.punts_bando_B = 0;
+            this.maxs = [];
+            self.calculs();
+        });
+
+        this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
+            console.log("GET USUARIS BY CAMPANYA ID FROM DB TROUGHT THE STORE", self.getUsersByCampanyaActual);
+        });
+        },
     },
     mounted: function(){
         let self = this;
         console.log("CAMPANYA!!",this.$route);
         this.campanya_id =  this.$route.params.id;
 
-        this.getConfrontacionsByCampanyaIdFromDB(this.campanya_id).then(()=>{
-            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getConfrontacions);
-
-            self.grouped_display = Object.groupBy(self.getConfrontacions, ({ torn }) => torn);
-            console.log(this.grouped_display);
-
-            let t = Object.keys(this.grouped_display);
-            self.mans_usual = self.grouped_display[t[0]].length;
-            console.log("MAns USUAL", self.mans_usual);
-
-            self.calculs();
-        });
-
-        this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
-            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getUsersByCampanyaActual);
-        });
+        this.start();
+        
     }
 }
 </script>

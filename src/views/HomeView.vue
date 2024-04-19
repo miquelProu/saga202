@@ -25,11 +25,18 @@
                 </div>
             </div>
             <div class="tile is-parent">
-                <div class="tile is-child box">
-                    <p class="title">Generals</p>
-                    <p>Aquí podem posar informació de les campanyes, el General amb més victories, la batalla amb mes punts totals, no sé.... </p>
-                    <p>Suspendisse varius ligula in molestie lacinia. Maecenas varius eget ligula a sagittis. Pellentesque interdum, nisl nec interdum maximus, augue diam porttitor lorem, et sollicitudin felis neque sit amet erat. Maecenas imperdiet felis nisi, fringilla luctus felis hendrerit sit amet. Aenean vitae gravida diam, finibus dignissim turpis. Sed eget varius ligula, at volutpat tortor.</p>
-                    <p>Integer sollicitudin, tortor a mattis commodo, velit urna rhoncus erat, vitae congue lectus dolor consequat libero. Donec leo ligula, maximus et pellentesque sed, gravida a metus. Cras ullamcorper a nunc ac porta. Aliquam ut aliquet lacus, quis faucibus libero. Quisque non semper leo.</p>
+                <div class="tile is-child box has-text-left content">
+                    <p class="title has-text-centered">Instruccións</p>
+                    <p><em>Aquesta beta 0.2 és més robusta que l'anterior, que no anava bé, encara que no guanya en característiques, penso que gairebé funciona, el que sí que és prou funcional per fer-la servir.</em></p>
+                    <p>Els generals es gestionen globalment i s'escullen per cada campanya, si cal afegir algun general, hem d'anar a <strong>Gestionar generals</strong> per afegir-lo</p>
+                    <p>Els passos per crear i portar una campanya serien:</p>
+                    <ul>
+                        <li>Anar a <strong>definir campanya</strong> on posarem el nom, els torns, obligatori, però orientatiu i els generals en els seus bàndols</li>
+                        <li>Anar a la nova campanya, des de la home o el des del menú desplegable de <strong>Campanya</strong>
+Aquí tenim tota la informació de la campanya, els punts per bàndol i per general, els torns i els resultats de les confrontacions, podem anar a les confrontacions de cada torn clicant al <strong>Torn n</strong> o generar un <strong>Nou Torn</strong></li>
+                        <li>Dins de les confrontacions del torn és on arrossegant, decidim els emparellaments i les batalles a jugar, un cop l'emparellament està aparaulat s'ha de <strong>Tancar</strong>, clicant al botó, quan s'ha tancat ja no es pot moure, s'ha de jugar!<br>Quant tinguem el resultat hem d'emplenar les puntuacions i clicar a <strong>Final</strong>, a partir d'aquest moment ja apareixerà la informació a la campanya com a batalla jugada.</li>
+                    </ul>
+                    <p>Si després de fer-la servir una estona veieu coses estranyes, <strong>aneu a la Home i premeu F5 o Recargar</strong></p>
                 </div>
             </div>
         </div>

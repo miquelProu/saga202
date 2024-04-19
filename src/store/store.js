@@ -106,16 +106,28 @@ export default new Vuex.Store({
         setConfrontacioTorn(state, torn){
             state.confrontacioTorn = torn;
         },
+        finalizeConfrontacio(state, obj) {
+            // Find index of the item to be updated
+            const itemIndex = state.confrontacions.findIndex(x => x.id == obj.id);
+            for (const f of state.confrontacions){
+                console.log(f.id, obj.id);
+                console.log(f.id == obj.id);
+            }
+            console.log(itemIndex);
+            state.confrontacions[itemIndex]['isFinal'] = "1";
+            state.confrontacions[itemIndex]['bandoA']['punts'] = obj.pA;
+            state.confrontacions[itemIndex]['bandoB']['punts'] = obj.pB;
+        }
     },
     actions:{
-        updateFinalConfrontacio({commit}, obj){
-
-        },
         pushConfrontacio({commit}, confrontacio){
             commit('pushConfrontacio', confrontacio);
         },
         setConfrontacioTorn({commit}, torn){
             commit('setConfrontacioTorn', torn);
+        },
+        finalizeConfrontacioById({commit}, obj){
+            commit('finalizeConfrontacio', obj);
         },
         async saveUser({commit, state}, nom){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+nom);
@@ -150,7 +162,13 @@ export default new Vuex.Store({
                 if (posts.data) {
                     console.log("CALL AJAX CONFRONTACIONS BY CAMPANAYA ID", posts.data);
                     commit('populateConfrontacions', posts.data.confrontacions);
-                    commit('setCampanyaActual', {id: campanyaId, nom: posts.data.campanya});
+                    //commit('setCampanyaActual', {id: campanyaId, nom: posts.data.campanya});
+                }
+                let self = this;
+                for (const f of state.campanyes){
+                    if (f.id == campanyaId){
+                        commit('setCampanyaActual', {id: f.id, nom: f.nom});
+                    }
                 }
             }
         },

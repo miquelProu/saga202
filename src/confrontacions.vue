@@ -139,6 +139,11 @@ import draggable from "vuedraggable";
 import { mapGetters, mapActions } from 'vuex'
 import axios from "axios";
 
+/**
+ * TODO: Mirar de no portar una dobla contabilitat de les contrntacions,
+ * a la store i al component i gesionar-ho tot des de la store
+ * */
+
 export default {
     name: 'confrontacions',
     components: {
@@ -186,7 +191,6 @@ export default {
             getConfrontacionsByTorn: 'getConfrontacionsByTorn',
             getCampanyaActual: 'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
-            getUsers: 'getUsers',
         }),
     },
     methods: {
@@ -194,9 +198,10 @@ export default {
             setConfrontacioTorn: 'setConfrontacioTorn',
             pushConfrontacio: 'pushConfrontacio',
             getUsersFromDB: 'getUsersFromDB',
+            finalizeConfrontacioById: 'finalizeConfrontacioById',
         }),
         getUserById(id){
-            return this.getUsers.filter((obj) => {return obj.id === id});
+            return this.getUsersByCampanyaActual.filter((obj) => {return obj.id_usuari === id + ''});
         },
         selectBatallesByJoc(joc){
             return this.batalles_selectables.filter(function( obj ) {
@@ -234,6 +239,7 @@ export default {
                 punts_bando_B: null,
                 torn: this.torn,
                 isFinal: false,
+                id: 0,
             });
             console.log("CONFRONTACIONS", this.confrontacions);
 
@@ -248,27 +254,12 @@ export default {
                 'nTorn': this.torn,
                 'isFinal': 0,
             };
-            this.setTancar(params);
+            this.setTancar(params, id);
 
-            //L'Apunto al Vuex
-            let confrVuex = {
-                torn: this.torn,
-                isFinal: "0",
-                id: this.last_ID_salvat,
-                id_batalla: this.batalles_selected[id].id,
-            }
-            let bandoAtemp = this.getUserById(this.bando_A[id].id);
-            let bandoA = bandoAtemp[0];
-            bandoA['punts'] = 0;
-            confrVuex['bandoA'] = bandoA;
-            let bandoBtemp = this.getUserById(this.bando_B[id].id);
-            let bandoB = bandoBtemp[0];
-            bandoB['punts'] = 0;
-            confrVuex['bandoB'] = bandoB;
 
-            this.pushConfrontacio(confrVuex);
         },
-        async setTancar(params){
+        async setTancar(params, id){
+            let self = this;
             let text = '?';
             for (const f of Object.keys(params)){
                 text = text + '&' + f + '=' + params[f];
@@ -278,7 +269,32 @@ export default {
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
                 this.last_ID_salvat = posts.data;
-                //this.confrontacions[this.lastIdxTancat]['id'] = posts.data;
+                let self = this;
+                for (const f of this.confrontacions){
+                    if (f.idx == id){
+                        f.id = posts.data;
+                    }
+                }
+
+            //L'Apunto al Vuex
+                let confrVuex = {
+                    torn: this.torn,
+                    isFinal: "0",
+                    id: posts.data,
+                    id_batalla: this.batalles_selected[id].id,
+                }
+                let bandoAtemp = this.getUserById(this.bando_A[id].id);
+                console.log(bandoAtemp);
+                let bandoA = bandoAtemp[0];
+                console.log(bandoA);
+                confrVuex['bandoA'] = {id: bandoA.id_usuari, name: bandoA.nom, punts: bandoA.punts};
+                let bandoBtemp = this.getUserById(this.bando_B[id].id);
+                let bandoB = bandoBtemp[0];
+                confrVuex['bandob'] = {id: bandoB.id_usuari, name: bandoB.nom, punts: bandoB.punts};
+
+
+                this.pushConfrontacio(confrVuex);
+
             }
         },
         final(idx){
@@ -286,10 +302,10 @@ export default {
             let pA = 0;
             let pB = 0;
 
+
             for (const conf of this.confrontacions) {
                 if (conf.idx == idx){
                     conf.isFinal = true;
-                    console.log(conf);
                     id = parseInt(conf.id);
                     pA = parseInt(conf.punts_bando_A);
                     pB = parseInt(conf.punts_bando_B);
@@ -297,6 +313,7 @@ export default {
             }
 
             this.setFinal(id, pA, pB);
+            this.finalizeConfrontacioById({id: id, pA: pA, pB: pB});
         },
         async setFinal(id, pA, pB){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/updateConfrontacioFinal.php?id='+id+'&pA='+pA+'&pB='+pB);
@@ -377,7 +394,8 @@ export default {
                     punts_bando_A: (f.bandoA.punts == 0) ? null : f.bandoA.punts,
                     punts_bando_B: (f.bandoB.punts == 0) ? null : f.bandoB.punts,
                     torn: self.torn,
-                    isFinal: (f.isFinal == "1") ? true: false
+                    isFinal: (f.isFinal == "1") ? true: false,
+                    id: f.id,
                 });
             }
             // EN tots els casos esborrem dels selectables les batelles escollides
@@ -423,7 +441,7 @@ export default {
         this.setConfrontacioTorn(this.torn);
         console.log(this.getConfrontacionsByTorn);
         this.convertConfrontacionsVuexConfrontacions();
-        this.getUsersFromDB();
+        //this.getUsersFromDB();
         console.log("CAMPANYA ACTUAL", this.getCampanyaActual);
     }
 }

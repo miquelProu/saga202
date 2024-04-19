@@ -97,6 +97,8 @@
 import draggable from "vuedraggable";
 //import axios from 'axios';
 import { mapGetters, mapActions } from 'vuex'
+import router from './router'
+
 
 export default {
     name: 'definirCampanya',
@@ -138,6 +140,7 @@ export default {
                 bando_B: self.bando_B
             };
             this.saveCampaya(obj);
+            router.push({ name: 'home'});
         }
     },
     mounted: function(){
