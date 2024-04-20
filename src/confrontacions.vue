@@ -153,16 +153,8 @@ export default {
         return{
             modell: [],
             enabled: true,
-            bando_A: [
-/*                { name: "John", id: 0 },
-                { name: "Joao", id: 1 },
-                { name: "Jean", id: 2 }
-*/            ],
-            bando_B: [
-/*                { name: "Maria", id: 3 },
-                { name: "Paula", id: 4 },
-                { name: "Montse", id: 5 }
-*/            ],
+            bando_A: [],
+            bando_B: [],
             batalles_noms:[
                 {name: "Bienes de valor", id: 0, joc: 'saga'},
                 {name: "Reclamar el territorio", id: 1, joc: 'saga'},
@@ -204,23 +196,20 @@ export default {
             torn: 0,
         }
     },
-      watch: {
-       /* getConfrontacionsByTorn: function (newQuestion, oldQuestion) {
-          console.log("WATCH TORNS");
-          console.log(newQuestion, oldQuestion);
-      },*/
-    },
+    watch: {},
     computed: {
         ...mapGetters({
             getConfrontacionsByTorn: 'getConfrontacionsByTorn',
             getCampanyaActual: 'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
         }),
+        //Creem llista calenta des de Vuex amb el bando A
         bandoAColumnGrabat: function () {
             return this.getConfrontacionsByTorn.map(function (f) {
               return {name:f.bandoA.name, id:f.bandoA.id};
             });
         },
+        // Llista calenta que llistem amb el elements del Vuex mes els arrosegats pel compoenent
         bandoAColumn: function () {
             let ret = []
             ret.push(...this.bandoAColumnGrabat);
@@ -281,17 +270,12 @@ export default {
             getUsersFromDB: 'getUsersFromDB',
             finalizeConfrontacioById: 'finalizeConfrontacioById',
         }),
-        getUserById(id){
-            return this.getUsersByCampanyaActual.filter((obj) => {return obj.id_usuari === id + ''});
-        },
         selectBatallesByJoc(joc){
             return this.batalles_selectables.filter(function( obj ) {
                 return obj.joc === joc ;
             });
         },
         isSelected: function(banda, id, idx){
-            let self = this;
-            let temp = false;
             let arr = null;
             if (banda != 'batalla'){
                 arr = this.getConfrontacionsByTorn.filter((x) => x[banda]['id'] == id);
@@ -307,7 +291,6 @@ export default {
             return (!arr.length) ? false : true;
         },
         isDisabled: function(id, boto){
-            let self = this;
             let temp = false;
 
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
@@ -317,18 +300,6 @@ export default {
                 temp = (arr.length > 0 && arr[0].isFinal == "1");
             }
 
-            return temp;
-        },
-        modeel(idx){
-            let temp = 0;
-            let count = 0;
-
-            for (const conf of this.confrontacions) {
-                    if (conf.idx == idx){
-                        temp = count;
-                    }
-                    count++;
-            }
             return temp;
         },
         checkMove: function(e) {
@@ -375,13 +346,13 @@ export default {
                     bandoA: this.bandoAColumn[idx],
                     bandoB: this.bandoBColumn[idx]
                 };
-                // Esborro la confrontacio que ara guardarem a la store de la llista den bandos n o guardats
+                // Esborro la confrontacio que ara guardarem a la store de la llista dels bandos no guardats
                 const iddx = this.bando_A.findIndex(function(x){return x.id == self.bandoAColumn[idx]['id']});
                 console.log(iddx);
                 this.bando_A.splice(iddx, 1);
                 const idddx = this.bando_B.findIndex(function(x){return x.id == self.bandoBColumn[idx]['id']});
                 this.bando_B.splice(idddx, 1);
-                //Esborro de la llista de batallas seleccionades la que guardem a la store
+                //Esborro de la llista de batallas seleccionades, la que guardem a la store
                 const iddddx = this.batalles_selected.findIndex(function(x){return x.id == self.batallesColumn[idx]['id']});
                 this.batalles_selected.splice(iddddx, 1);
 
@@ -410,63 +381,6 @@ export default {
             //console.log("EXTREURE", coleccio);
             return coleccio;
         },
-        convertConfrontacionsVuexConfrontacions(){
-            // Amotllem les confrontacions de la BBDD a l'estructura del component
-            let self = this;
-            for (const [idx, f] of this.getConfrontacionsByTorn.entries()){
-                self.bando_A.push({id: f.bandoA.id, name: f.bandoA.name});
-                self.bando_B.push({id: f.bandoB.id, name: f.bandoB.name});
-                let batalla = self.findBatallaById(f.id_batalla * 1);
-                self.batalles_selected.push(batalla);
-
-                self.confrontacions.push({
-                    idx: idx,
-                    bando_A: f.bandoA.id,
-                    batalla: f.id_batalla,
-                    bando_B: f.bandoB.id,
-                    punts_bando_A: (f.bandoA.punts == 0) ? null : f.bandoA.punts,
-                    punts_bando_B: (f.bandoB.punts == 0) ? null : f.bandoB.punts,
-                    torn: self.torn,
-                    isFinal: (f.isFinal == "1") ? true: false,
-                    id: f.id,
-                });
-            }
-            // EN tots els casos esborrem dels selectables les batelles escollides
-            for (const f of this.getConfrontacionsByTorn){
-                self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla * 1);
-            }
-
-            // Si no esta el torn ple, afegim els usuaris sense confrontacio
-            if (this.getConfrontacionsByTorn.length !== this.getUsersByCampanyaActual.length / 2){
-                let bandoA = this.getUsersByCampanyaActual.filter((obj) => { return obj.bando == "0" });
-                for (const f of this.bando_A) {
-                    bandoA = this.extractRepetits(bandoA, f.id + "", "id_usuari");
-                }
-                for (const f of bandoA){
-                    self.bando_A.push({id: f.id_usuari, name: f.nom});
-                }
-                console.log("BANDO A: FILTERED", bandoA);
-
-                let bandoB = this.getUsersByCampanyaActual.filter((obj) => { return obj.bando == "1" });
-                for (const f of this.bando_B) {
-                    bandoB = this.extractRepetits(bandoB, f.id + "", "id_usuari");
-                }
-                for (const f of bandoB){
-                    self.bando_B.push({id: f.id_usuari, name: f.nom});
-                }
-                console.log("BANDO B: FILTERED", bandoB);
-
-            }
-
-        },
-        findBatallaById(id){
-            let self = this;
-            for (const ff of this.batalles_selectables){
-                if (ff.id == id){
-                    return ff;
-                }
-            }
-        },
     },
     created: function(){
         let self = this;
@@ -474,17 +388,16 @@ export default {
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
             self.modell.push({A:f['bandoA']['punts'], B:f['bandoB']['punts']});
-            // EN tots els casos esborrem dels selectables les batelles escollides
-            //self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
         }
     },
     mounted: function(){
         let self = this;
-        console.log(this.$route.params.campanya_id), this.$route.params.torn;
+        console.log(this.$route.params.campanya_id, this.$route.params.torn);
         this.torn = this.$route.params.torn;
         this.setConfrontacioTorn(this.torn);
-        console.log(this.getConfrontacionsByTorn.length);
+        //console.log(this.getConfrontacionsByTorn.length);
 
+        console.log("Creo els models");
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
@@ -502,7 +415,7 @@ export default {
                 arr = arr.filter((x) => f.bandoA.id != x.id_usuari);
                 arr = arr.filter((x) => f.bandoB.id != x.id_usuari);
             }
-            console.log("ARR", arr);
+            //console.log("ARR", arr);
             for (const f of arr){
                 if (f.bando == "0"){
                     self.bando_A.push({id: f.id_usuari, name: f.nom});
@@ -512,10 +425,6 @@ export default {
             }
 
         }
-        console.log("Creo els models");
-        //this.convertConfrontacionsVuexConfrontacions();
-        //this.getUsersFromDB();
-        console.log("CAMPANYA ACTUAL", this.getCampanyaActual);
     }
 }
 </script>

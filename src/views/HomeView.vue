@@ -27,16 +27,17 @@
             <div class="tile is-parent">
                 <div class="tile is-child box has-text-left content">
                     <p class="title has-text-centered">Instruccións</p>
-                    <p><em>Aquesta beta 0.2 és més robusta que l'anterior, que no anava bé, encara que no guanya en característiques, penso que gairebé funciona, el que sí que és prou funcional per fer-la servir.</em></p>
+                    <p><em>Aquesta beta 0.2.0.1 és més robusta que l'anterior, que no anava bé, encara que no guanya en característiques, penso que gairebé funciona, el que sí que és prou funcional per fer-la servir.</em></p>
                     <p>Els generals es gestionen globalment i s'escullen per cada campanya, si cal afegir algun general, hem d'anar a <strong>Gestionar generals</strong> per afegir-lo</p>
                     <p>Els passos per crear i portar una campanya serien:</p>
                     <ul>
                         <li>Anar a <strong>definir campanya</strong> on posarem el nom, els torns, obligatori, però orientatiu i els generals en els seus bàndols</li>
                         <li>Anar a la nova campanya, des de la home o el des del menú desplegable de <strong>Campanya</strong>
 Aquí tenim tota la informació de la campanya, els punts per bàndol i per general, els torns i els resultats de les confrontacions, podem anar a les confrontacions de cada torn clicant al <strong>Torn n</strong> o generar un <strong>Nou Torn</strong></li>
-                        <li>Dins de les confrontacions del torn és on arrossegant, decidim els emparellaments i les batalles a jugar, un cop l'emparellament està aparaulat s'ha de <strong>Tancar</strong>, clicant al botó, quan s'ha tancat ja no es pot moure, s'ha de jugar!<br>Quant tinguem el resultat hem d'emplenar les puntuacions i clicar a <strong>Final</strong>, a partir d'aquest moment ja apareixerà la informació a la campanya com a batalla jugada.</li>
+                        <li>Dins de les confrontacions del torn és on arrossegant, decidim els emparellaments i les batalles a jugar, un cop l'emparellament està aparaulat s'ha de <strong>Tancar</strong>, clicant al botó, quan s'ha tancat ja no es pot moure, s'ha de jugar!</li>
+                        <li>Quant tinguem el resultat de la batalla, hem d'emplenar les puntuacions i clicar a <strong>Final</strong>, a partir d'aquest moment ja apareixerà la informació a la campanya com a batalla jugada.</li>
                     </ul>
-                    <p>Si després de fer-la servir una estona veieu coses estranyes, <strong>aneu a la Home i premeu F5 o Recargar</strong></p>
+                    <p>Si després de fer-la servir una estona veieu coses estranyes, <strong>aneu a la Home i premeu F5 o Recargar</strong>, s'igualent la BBDD i l'aplicacio i s'arreglen els desajustos</p>
                 </div>
             </div>
         </div>
