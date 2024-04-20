@@ -9,7 +9,7 @@
           </div>
 
         <div class="container">
-            <div class="columns is-gapless">
+            <div class="columns is-gapless  is-mobile">
                 <div class="column is-2 bandoA">
                     <draggable
                         :list="bando_A"
@@ -35,7 +35,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja columns is-gapless"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
+                        <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
                             <div class="column one-three-fifths">
                                     <div class="field" v-if="existControntacio(element.id, idx)">
                                         <p class="control">
@@ -92,15 +92,15 @@
 
                 </div>
             </div>
-            <div class="columns">
-                <div class="column is-4" style="height: 80px;">
+            <div class="columns mt-6">
+                <div class="column is-4">
                     <div class="colonna has-text-centered" style="font-size: 65px;margin-top: -10px;">SAGA</div>
                 </div>
-                <div class="column is-4 is-offset-1" style="height: 80px;">
+                <div class="column is-4 is-offset-1">
                     <div class="windlass has-text-centered" style="font-size: 40px;">CLASH OF SPEARS</div>
                 </div>
             </div>
-            <div class="columns is-mobile">
+            <div class="columns">
                 <div class="column is-4 misio-seleccio">
                     <draggable
                         :list="selectBatallesByJoc('saga')"

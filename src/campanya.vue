@@ -4,7 +4,7 @@
             <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
             <div class="title cinzel-regular is-size-4">Bando A: <span class="is-size-2">{{punts_bando_A}}</span> Bando B: <span class="is-size-2">{{punts_bando_B}}</span></div>
             <div class="title cinzel-regular is-size-4" v-if="isCalculat">Generals: Bando A: <span class="is-size-2">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</span> Bando B: <span class="is-size-2">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</span></div>
-            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1, isNew: 1 }}">Nou torn</router-link></div>
+            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1}}">Nou torn</router-link></div>
         </div>
         <div class="container confrontacions">
             <div class="columns is-multiline">
@@ -13,7 +13,7 @@
                         <thead>
                             <tr>
                                 <td colspan="5" class="has-text-centered">
-                                <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element, isNew: isNew(element)} }">Torn {{element}}</router-link>
+                                <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
                         </thead>
@@ -102,13 +102,6 @@ export default {
             getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
         }),
-        isNew(e){
-            let acabats = this.grouped_display[e].filter(function( obj ) {
-                return obj.isFinal === "1" ;
-            });
-
-            return (acabats.length === this.mans_usual) ? 0 : 2;
-        },
         calculs(){
             let self = this;
             let pa = 0;

@@ -6,19 +6,19 @@
       <img src="~@/assets/logo_peque2.png" width="32" height="32">
     </a>
 
-    <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+    <a role="button" class="navbar-burger burger" :class="{'is-active': burger}" @click="toggleBurger()" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
 
-  <div id="navbarBasicExample" class="navbar-menu">
+  <div class="navbar-menu" :class="{'is-active': burger}">
     <div class="navbar-start">
-      <a class="navbar-item">
+      <a class="navbar-item" @click="closeBurger()">
         <router-link class="nav-link is-primary" active-class="a" to="/">Home</router-link>
       </a>
-        <a class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-item has-dropdown" :class="{'is-active': hover}" @click="campanya()">
             <a class="navbar-link">Campanya</a>
             <div class="navbar-dropdown">
                 <div v-for="c in getCampanyes">
@@ -26,14 +26,14 @@
                 </div>
             </div>
         </a>
-      <a class="navbar-item">
+      <a class="navbar-item" @click="closeBurger()">
         <router-link to="/defineixCampanya">Defineix Campanya</router-link>
       </a>
-      <a class="navbar-item">
+      <a class="navbar-item" @click="closeBurger()">
         <router-link to="/afegeix">Gestionar Generals</router-link>
       </a>
 
-      <div class="navbar-item has-dropdown is-hoverable">
+      <!--div class="navbar-item has-dropdown is-hoverable">
         <a class="navbar-link">
           More
         </a>
@@ -53,10 +53,10 @@
             Report an issue
           </a>
         </div>
-      </div>
+      </div-->
     </div>
 
-    <div class="navbar-end">
+    <!--div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
           <a class="button is-primary">
@@ -67,7 +67,7 @@
           </a>
         </div>
       </div>
-    </div>
+    </div-->
   </div>
 </nav>
     <router-view/>
@@ -85,7 +85,9 @@ import { mapGetters, mapActions } from 'vuex'
     },
     data(){
         return{
-        campanyes: []
+        campanyes: [],
+        burger: false,
+        hover: false,
         };
     },
     computed: {
@@ -97,6 +99,16 @@ import { mapGetters, mapActions } from 'vuex'
         ...mapActions({
             getCampanyesFromDB: 'getCampanyesFromDB'
         }),
+        toggleBurger(){
+          this.burger = !this.burger;
+        },
+        closeBurger(){
+          this.burger = false;
+        },
+        campanya(){
+          this.hover = !this.hover;
+          this.closeBurger();
+        }
     },
     mounted: function(){
         this.getCampanyesFromDB().then(() => {

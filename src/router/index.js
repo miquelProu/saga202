@@ -16,7 +16,7 @@ const routes = [
     component: HomeView
   },
   {
-    path: '/confrontacions/:campanya_id/:torn/:isNew',
+    path: '/confrontacions/:campanya_id/:torn',
     name: 'confrontacions',
     component: Confrontacions,
   },
