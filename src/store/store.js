@@ -108,12 +108,8 @@ export default new Vuex.Store({
         },
         finalizeConfrontacio(state, obj) {
             // Find index of the item to be updated
+            //console.log("FINALIZE",obj)
             const itemIndex = state.confrontacions.findIndex(x => x.id == obj.id);
-            for (const f of state.confrontacions){
-                console.log(f.id, obj.id);
-                console.log(f.id == obj.id);
-            }
-            console.log(itemIndex);
             state.confrontacions[itemIndex]['isFinal'] = "1";
             state.confrontacions[itemIndex]['bandoA']['punts'] = obj.pA;
             state.confrontacions[itemIndex]['bandoB']['punts'] = obj.pB;

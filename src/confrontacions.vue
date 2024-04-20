@@ -20,7 +20,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" :class="isSelected('bando_A', element.id)" v-for="element in bando_A" :key="element.id">
+                        <div class="tarja" :class="isSelected('bandoA', element.id, idx)" v-for="(element, idx) in bandoAColumn" :key="element.id">
                             <div>{{ element.name }}</div>
                         </div>
                     </draggable>
@@ -35,26 +35,26 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja columns is-gapless" :class="isSelected('batalla', element.id)" v-for="(element,idx) in batalles_selected" :key="element.id">
+                        <div class="tarja columns is-gapless"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
                             <div class="column one-three-fifths">
-                                    <div class="field" v-if="existControntacio(idx)">
+                                    <div class="field" v-if="existControntacio(element.id, idx)">
                                         <p class="control">
                                             <input
                                             class="input is-small"
                                             type="text"
                                             placeholder="0"
-                                            v-model="confrontacions[modeel(idx)].punts_bando_A"
-                                            :disabled="isDisabled(idx, 'final')">
+                                            v-model="modell[idx]['A']"
+                                            :disabled="isDisabled(element.id, 'final')">
                                         </p>
                                     </div>
                             </div>
                             <div class="column is-three-fifths">{{ element.name }}</div>
                             <div class="column one-three-fifths">
-                                <div class="field "  v-if="existControntacio(idx)">
+                                <div class="field "  v-if="existControntacio(element.id, idx)">
                                         <p class="control">
                                             <input class="input is-small" type="text" placeholder="0"
-                                            v-model="confrontacions[modeel(idx)].punts_bando_B"
-                                            :disabled="isDisabled(idx, 'final')">
+                                            v-model="modell[idx]['B']"
+                                            :disabled="isDisabled(element.id, 'final')">
                                         </p>
                                 </div>
                             </div>
@@ -71,18 +71,18 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" :class="isSelected('bando_B', element.id)" v-for="element in bando_B" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
                 <div class="column is-3 botons" style="margin-top:30px;">
-                    <div class="boto buttons" v-for="(element,idx) in bando_A" :key="idx">
-                        <button class="button" @click="tancar(idx)" :disabled="isDisabled(idx, 'tancar')">
+                    <div class="boto buttons" v-for="(element,idx) in botonsColumn" :key="idx">
+                        <button class="button" @click="tancar(element, idx)" :disabled="isDisabled(element.id, 'tancar')">
 <!--                            <span class="icon">
                               <font-awesome-icon icon="fa-solid fa-floppy-disk"/>
                             </span>-->
                             <span>Tancar</span>
                         </button>
-                        <button class="button" @click="final(idx)" :disabled="isDisabled(idx, 'final')">
+                        <button class="button" @click="final(element.id, idx)" :disabled="isDisabled(element.id, 'final')">
 <!--                            <span class="icon">
                               <font-awesome-icon icon="fa-solid fa-floppy-disk"/>
                             </span>-->
@@ -151,6 +151,7 @@ export default {
     },
     data: function(){
         return{
+            modell: [],
             enabled: true,
             bando_A: [
 /*                { name: "John", id: 0 },
@@ -162,6 +163,23 @@ export default {
                 { name: "Paula", id: 4 },
                 { name: "Montse", id: 5 }
 */            ],
+            batalles_noms:[
+                {name: "Bienes de valor", id: 0, joc: 'saga'},
+                {name: "Reclamar el territorio", id: 1, joc: 'saga'},
+                {name: "Festines y saqueos", id: 2, joc: 'saga'},
+                {name: "Una historia de desafíos", id: 3, joc: 'saga'},
+                {name: "¡Emboscada!", id: 4, joc: 'saga'},
+                {name: "Mantener el botín", id: 5, joc: 'saga'},
+                {name: "Desacratización", id: 6, joc: 'saga'},
+                {name: "Vieja disputa", id: 7, joc: 'saga'},
+                {name: "El cruce", id: 8, joc: 'saga'},
+                {name: "Cambio de planes", id: 9, joc: 'saga'},
+                {name: "¡Esta es mi tierra!", id: 10, joc: 'clash'},
+                {name: "Forrajeo", id: 11, joc: 'clash'},
+                {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
+                {name: "Proyección de fuerza", id: 13, joc: 'clash'},
+                {name: "Rescate", id: 14, joc: 'clash'},
+            ],
             batalles_selectables:[
                 {name: "Bienes de valor", id: 0, joc: 'saga'},
                 {name: "Reclamar el territorio", id: 1, joc: 'saga'},
@@ -186,12 +204,75 @@ export default {
             torn: 0,
         }
     },
+      watch: {
+       /* getConfrontacionsByTorn: function (newQuestion, oldQuestion) {
+          console.log("WATCH TORNS");
+          console.log(newQuestion, oldQuestion);
+      },*/
+    },
     computed: {
         ...mapGetters({
             getConfrontacionsByTorn: 'getConfrontacionsByTorn',
             getCampanyaActual: 'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
         }),
+        bandoAColumnGrabat: function () {
+            return this.getConfrontacionsByTorn.map(function (f) {
+              return {name:f.bandoA.name, id:f.bandoA.id};
+            });
+        },
+        bandoAColumn: function () {
+            let ret = []
+            ret.push(...this.bandoAColumnGrabat);
+            ret.push(...this.bando_A);
+            
+            return ret;
+        },
+        bandoBColumnGrabat: function () {
+          return this.getConfrontacionsByTorn.map(function (f) {
+              return {name:f.bandoB.name, id:f.bandoB.id};
+            });
+        },
+        bandoBColumn: function () {
+            let ret = []
+            ret.push(...this.bandoBColumnGrabat);
+            ret.push(...this.bando_B);
+            
+            return ret;
+        },
+        botonsColumnGrabat: function(){
+            return this.getConfrontacionsByTorn.map(function(f){
+                return {id: f.id};
+            });
+        },
+        botonsColumn: function(){
+            let ret = [];
+            ret.push(...this.botonsColumnGrabat);
+            for (let i =0; i < this.batalles_selected.length; i++) {
+                ret.push({id: '99'});
+            }
+            return ret;
+        },
+        batallesColumnGrabat: function(){
+            let self = this;
+            let temp = [];
+            for (const f of this.getConfrontacionsByTorn){
+                for (const x of self.batalles_noms){
+                    if (x.id == f.id_batalla){
+                        temp.push(x);
+                    }
+                }
+            }
+            return temp;
+        },
+        batallesColumn: function(){
+            let ret = []
+            ret.push(...this.batallesColumnGrabat);
+            ret.push(...this.batalles_selected);
+            
+            return ret;
+        },
+
     },
     methods: {
         ...mapActions({
@@ -207,6 +288,36 @@ export default {
             return this.batalles_selectables.filter(function( obj ) {
                 return obj.joc === joc ;
             });
+        },
+        isSelected: function(banda, id, idx){
+            let self = this;
+            let temp = false;
+            let arr = null;
+            if (banda != 'batalla'){
+                arr = this.getConfrontacionsByTorn.filter((x) => x[banda]['id'] == id);
+                
+            } else {
+                arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
+            }
+            return (!arr.length) ? '' : 'selected';
+            
+        },
+        existControntacio(id, idx){
+            let arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
+            return (!arr.length) ? false : true;
+        },
+        isDisabled: function(id, boto){
+            let self = this;
+            let temp = false;
+
+            let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
+            if (boto == 'tancar'){
+                temp = (!arr.length) ? false : true;
+            } else if(boto == 'final'){
+                temp = (arr.length > 0 && arr[0].isFinal == "1");
+            }
+
+            return temp;
         },
         modeel(idx){
             let temp = 0;
@@ -228,151 +339,73 @@ export default {
                 this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
             }
         },
-        tancar: function(id) {
-            //L' Apunto al component
-            this.confrontacions.push({
-                idx: id,
-                bando_A: this.bando_A[id].id,
-                batalla: this.batalles_selected[id].id,
-                bando_B: this.bando_B[id].id,
-                punts_bando_A: null,
-                punts_bando_B: null,
-                torn: this.torn,
-                isFinal: false,
-                id: 0,
-            });
-            console.log("CONFRONTACIONS", this.confrontacions);
-
+        tancar: function(id, idx) {
+            console.log("TANCAR", idx);
             //L'Apunto a la BBDD
             let params = {
                 'id_campanya': this.$route.params.campanya_id,
-                'id_usuari_A': this.bando_A[id].id,
-                'id_batalla': this.batalles_selected[id].id,
-                'id_usuari_B': this.bando_B[id].id,
+                'id_usuari_A': this.bandoAColumn[idx]['id'],
+                'id_batalla': this.batallesColumn[idx]['id'],
+                'id_usuari_B': this.bandoBColumn[idx]['id'],
                 'nPunts_A': 0,
                 'nPunts_B': 0,
                 'nTorn': this.torn,
                 'isFinal': 0,
             };
-            this.setTancar(params, id);
-
-
+            this.setTancar(params, idx);
+            // Afegeixo a l'array del v-model
+            this.modell.push({A:0, B:0});
         },
-        async setTancar(params, id){
+        async setTancar(params, idx){
+            // Faig l'insert i espero el nou id per guardar-ho a la store
             let self = this;
             let text = '?';
             for (const f of Object.keys(params)){
                 text = text + '&' + f + '=' + params[f];
             }
-
+            //console.log(text);
             const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
-                this.last_ID_salvat = posts.data;
-                let self = this;
-                for (const f of this.confrontacions){
-                    if (f.idx == id){
-                        f.id = posts.data;
-                    }
-                }
-
-            //L'Apunto al Vuex
-                let confrVuex = {
-                    torn: this.torn,
-                    isFinal: "0",
+                let conf = {
                     id: posts.data,
-                    id_batalla: this.batalles_selected[id].id,
-                }
-                let bandoAtemp = this.getUserById(this.bando_A[id].id);
-                console.log(bandoAtemp);
-                let bandoA = bandoAtemp[0];
-                console.log(bandoA);
-                confrVuex['bandoA'] = {id: bandoA.id_usuari, name: bandoA.nom, punts: bandoA.punts};
-                let bandoBtemp = this.getUserById(this.bando_B[id].id);
-                let bandoB = bandoBtemp[0];
-                confrVuex['bandob'] = {id: bandoB.id_usuari, name: bandoB.nom, punts: bandoB.punts};
+                    id_batalla: this.batallesColumn[idx]['id'],
+                    isFinal: "0",
+                    torn: this.torn,
+                    bandoA: this.bandoAColumn[idx],
+                    bandoB: this.bandoBColumn[idx]
+                };
+                // Esborro la confrontacio que ara guardarem a la store de la llista den bandos n o guardats
+                const iddx = this.bando_A.findIndex(function(x){return x.id == self.bandoAColumn[idx]['id']});
+                console.log(iddx);
+                this.bando_A.splice(iddx, 1);
+                const idddx = this.bando_B.findIndex(function(x){return x.id == self.bandoBColumn[idx]['id']});
+                this.bando_B.splice(idddx, 1);
+                //Esborro de la llista de batallas seleccionades la que guardem a la store
+                const iddddx = this.batalles_selected.findIndex(function(x){return x.id == self.batallesColumn[idx]['id']});
+                this.batalles_selected.splice(iddddx, 1);
 
-
-                this.pushConfrontacio(confrVuex);
-
+                //Afegeixo tot l'obejcte confrontacio amb l'Id de l'insert a la store
+                this.pushConfrontacio(conf);
             }
         },
-        final(idx){
-            let id = 0;
-            let pA = 0;
-            let pB = 0;
-
-
-            for (const conf of this.confrontacions) {
-                if (conf.idx == idx){
-                    conf.isFinal = true;
-                    id = parseInt(conf.id);
-                    pA = parseInt(conf.punts_bando_A);
-                    pB = parseInt(conf.punts_bando_B);
-                }
-            }
-
-            this.setFinal(id, pA, pB);
-            this.finalizeConfrontacioById({id: id, pA: pA, pB: pB});
+        final(id, idx){
+            this.setFinal(id, this.modell[idx]['A'], this.modell[idx]['B']);
+            this.finalizeConfrontacioById({id: id, pA: this.modell[idx]['A'], pB: this.modell[idx]['B']});
         },
         async setFinal(id, pA, pB){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/updateConfrontacioFinal.php?id='+id+'&pA='+pA+'&pB='+pB);
+            //const posts = {data: "12"};
             if (posts.data) {
                 console.log("UPDATE FINAL!!", posts.data);
             }
         },
-        isSelected: function(banda, id){
-            let self = this;
-            let temp = false;
-
-            for (const conf of this.confrontacions) {
-                if (conf[banda] == id){
-                    //console.log(conf,banda, id);
-                    temp = true;
-                }
-            }
-
-            return (temp) ? 'selected' : '';
-        },
-        isDisabled: function(id, boto){
-            let self = this;
-            let temp = false;
-
-            if (boto == 'tancar'){
-                for (const conf of this.confrontacions) {
-                    if (conf.idx == id){
-                        //console.log('DISABLED', id);
-                        temp = true;
-                    }
-                }
-            } else if(boto == 'final'){
-                for (const conf of this.confrontacions) {
-                    if (conf.idx == id && conf.isFinal){
-                        //console.log('DISABLED', id);
-                        temp = true;
-                    }
-                }
-            }
-
-            return temp;
-        },
-        existControntacio(id){
-            let self = this;
-            let temp = false;
-
-            for (const conf of this.confrontacions) {
-                if (conf.idx == id){
-                    //console.log('DISABLED', id);
-                    temp = true;
-                }
-            }
-
-            return temp;
-        },
+        
+        
         extractRepetits(coleccio, id, nom = "id"){
             coleccio = coleccio.filter(function( obj ) {
                 //console.log(obj[nom], id);
-                return obj[nom] !== id ;
+                return obj[nom] != id ;
             });
             //console.log("EXTREURE", coleccio);
             return coleccio;
@@ -435,12 +468,52 @@ export default {
             }
         },
     },
+    created: function(){
+        let self = this;
+        this.modell = []
+        for (const f of this.getConfrontacionsByTorn){
+            // Creo l'array pels v-models
+            self.modell.push({A:f['bandoA']['punts'], B:f['bandoB']['punts']});
+            // EN tots els casos esborrem dels selectables les batelles escollides
+            //self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
+        }
+    },
     mounted: function(){
+        let self = this;
         console.log(this.$route.params.campanya_id), this.$route.params.torn;
         this.torn = this.$route.params.torn;
         this.setConfrontacioTorn(this.torn);
-        console.log(this.getConfrontacionsByTorn);
-        this.convertConfrontacionsVuexConfrontacions();
+        console.log(this.getConfrontacionsByTorn.length);
+
+        this.modell = [];
+        for (const f of this.getConfrontacionsByTorn){
+            // Creo l'array pels v-models
+            self.modell.push({A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'], B:(f['bandoB']['punts'] == "0") ? null : f['bandoB']['punts']});
+            // EN tots els casos esborrem dels selectables les batelles escollides
+            self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
+        }
+        // Si no esta el torn ple, afegim els usuaris sense confrontacio
+        if (this.getConfrontacionsByTorn.length !== this.getUsersByCampanyaActual.length / 2){
+            console.log("EL TORN NO ÉS PLE");
+            let temp = []
+
+            let arr = this.getUsersByCampanyaActual;
+            for (const f of this.getConfrontacionsByTorn){
+                arr = arr.filter((x) => f.bandoA.id != x.id_usuari);
+                arr = arr.filter((x) => f.bandoB.id != x.id_usuari);
+            }
+            console.log("ARR", arr);
+            for (const f of arr){
+                if (f.bando == "0"){
+                    self.bando_A.push({id: f.id_usuari, name: f.nom});
+                } else {
+                    self.bando_B.push({id: f.id_usuari, name: f.nom});
+                }
+            }
+
+        }
+        console.log("Creo els models");
+        //this.convertConfrontacionsVuexConfrontacions();
         //this.getUsersFromDB();
         console.log("CAMPANYA ACTUAL", this.getCampanyaActual);
     }
