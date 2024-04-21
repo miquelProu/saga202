@@ -15,7 +15,7 @@
                         <div class="column">
                             <div class=" has-text-centered">
                               <p class="heading">General Bando A</p>
-                              <p class="title">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</p>
+                              <p class="title  is-size-3"><span class="is-size-5">{{maxs[0]['jugador']}}</span> {{maxs[0]['punts']}}</p>
                             </div>
                         </div>
                         
@@ -32,7 +32,7 @@
                         <div class="column">
                             <div class=" has-text-centered">
                               <p class="heading">General Bando B</p>
-                              <p class="title">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</p>
+                              <p class="title is-size-3"><span class="is-size-5">{{maxs[1]['jugador']}}</span> {{maxs[1]['punts']}}</p>
                           </div>
                         </div>
                     </div>
@@ -42,7 +42,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">General Bando A</p>
-                  <p class="title">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</p>
+                  <p class="title is-size-3"><span class="is-size-5">{{maxs[0]['jugador']}}</span> {{maxs[0]['punts']}}</p>
                 </div>
               </div>
               <div class="level-item has-text-centered">
@@ -61,7 +61,7 @@
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">General Bando B</p>
-                  <p class="title">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</p>
+                  <p class="title is-size-3"><span class="is-size-5">{{maxs[1]['jugador']}}</span> {{maxs[1]['punts']}}</p>
                 </div>
               </div>
             </nav>
