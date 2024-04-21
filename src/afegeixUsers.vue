@@ -12,18 +12,24 @@
                     </div>
 
                 </div>
-                <div class="column is-2" style="position: relative;">
-                    <button class="button" style="position: absolute; bottom:0.75rem;" @click="guardar()">Guardar</button>
+                <div class="column is-2" >
+                    <div class="field">
+                      <label class="label is-hidden-mobile">&nbsp;</label>
+                      <div class="control">
+                        <button class="button" @click="guardar()">Guardar</button>
+                      </div>
+                    </div>
+                    
                 </div>
             </div>
         </div>
 
-        <div class="container" style="text-align: center;">
+        <div class="container mb-6" style="text-align: center;">
 
                 <div class="title cinzel-regular">Generals</div>
         </div>
         <div class="container">
-            <div class="columns is-multiline">
+            <div class="columns is-multiline is-mobile">
                 <div class="column is-3" v-for="element in getUsers" :key="element.id">
                     <div class="tarja">{{ element.name }}</div>
                 </div>

@@ -21,28 +21,21 @@
                       </div>
                     </div>
                 </div>
-                <div class="column is-2" style="position: relative;">
-                    <button class="button" style="position: absolute; bottom:0.75rem;" @click="guardar()">Guardar</button>
+                <div class="column is-2">
+                    <div class="field">
+                      <label class="label is-hidden-mobile">&nbsp;</label>
+                      <div class="control">
+                        <button class="button" @click="guardar()">Guardar</button>
+                      </div>
+                    </div>
+                    
                 </div>
-            </div>
-        </div>
-
-        <div class="container" style="text-align: center;">
-            <div class="columns">
-              <div class="column is-3">
-                <div class="title cinzel-regular">Bando A</div>
-              </div>
-              <div class="column is-3">
-                <div class="title cinzel-regular">Bando B</div>
-              </div>
-               <div class="column is-4 is-offset-1">
-                <div class="title cinzel-regular">Generals</div>
-              </div>
             </div>
         </div>
         <div class="container">
             <div class="columns">
-                <div class="column is-3">
+                <div class="column is-3-tablet is-10-mobile is-offset-1-mobile">
+                    <div class="title cinzel-regular has-text-centered">Bando A</div>
                     <draggable
                         :list="bando_A"
                         group="users"
@@ -58,7 +51,8 @@
                         </div>
                     </draggable>
                 </div>
-                <div class="column is-3">
+                <div class="column is-3-tablet is-10-mobile is-offset-1-mobile">
+                    <div class="title cinzel-regular has-text-centered">Bando B</div>
                     <draggable
                         :list="bando_B"
                         group="users"
@@ -74,7 +68,8 @@
                         </div>
                     </draggable>
                 </div>
-                <div class="column is-4 is-offset-1">
+                <div class="column is-4-tablet is-10-mobile is-offset-1-mobile is-offset-1-tablet">
+                    <div class="title cinzel-regular has-text-centered">Generals</div>
                     <draggable
                         :list="getUsers"
                         group="users"

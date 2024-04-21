@@ -9,8 +9,8 @@
           </div>
 
         <div class="container">
-            <div class="columns is-gapless  is-mobile">
-                <div class="column is-2 bandoA">
+            <div class="columns is-gapless is-mobile">
+                <div class="column is-2-tablet is-2-mobile bandoA">
                     <draggable
                         :list="bando_A"
                         :disabled="false"
@@ -25,7 +25,7 @@
                         </div>
                     </draggable>
                 </div>
-                <div class="column is-5 misio">
+                <div class="column is-5-tablet is-6-mobile misio">
                     <draggable
                         :list="batalles_selected"
                         group="batalles"
@@ -61,7 +61,7 @@
                         </div>
                     </draggable>
                 </div>
-                <div class="column is-2 bandoB">
+                <div class="column is-2-tablet is-2-mobile bandoB">
                     <draggable
                         :list="bando_B"
                         :disabled="false"
@@ -74,34 +74,35 @@
                         <div class="tarja" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
-                <div class="column is-3 botons" style="margin-top:30px;">
-                    <div class="boto buttons" v-for="(element,idx) in botonsColumn" :key="idx">
-                        <button class="button" @click="tancar(element, idx)" :disabled="isDisabled(element.id, 'tancar')">
-<!--                            <span class="icon">
-                              <font-awesome-icon icon="fa-solid fa-floppy-disk"/>
-                            </span>-->
-                            <span>Tancar</span>
-                        </button>
-                        <button class="button" @click="final(element.id, idx)" :disabled="isDisabled(element.id, 'final')">
-<!--                            <span class="icon">
-                              <font-awesome-icon icon="fa-solid fa-floppy-disk"/>
-                            </span>-->
-                            <span>Final</span>
-                        </button>
-                    </div>
+                <div class="column is-3-tablet is-2-mobile botons" style="margin-top:30px;">
 
+                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumn" :key="idx">
+                        <button 
+                            class="button mb-0" 
+                            @click="tancar(element, idx)" 
+                            :disabled="isDisabled(element.id, 'tancar')"
+                        >
+                            <span class="icon">
+                              <svg-icon type="mdi" :path="candau"></svg-icon>
+                            </span>
+                            <span  class=" is-hidden-mobile ">Tancar</span>
+                        </button>
+
+                        <button 
+                            class="button py-1 mb-0" 
+                            @click="final(element.id, idx)" 
+                            :disabled="isDisabled(element.id, 'final')"
+                        >
+                            <span class="icon">
+                              <svg-icon type="mdi" :path="finalIcon"></svg-icon>
+                            </span>
+                            <span class=" is-hidden-mobile ">Final</span></button>
+                    </div>
                 </div>
             </div>
             <div class="columns mt-6">
-                <div class="column is-4">
+                <div class="column is-4-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
                     <div class="colonna has-text-centered" style="font-size: 65px;margin-top: -10px;">SAGA</div>
-                </div>
-                <div class="column is-4 is-offset-1">
-                    <div class="windlass has-text-centered" style="font-size: 40px;">CLASH OF SPEARS</div>
-                </div>
-            </div>
-            <div class="columns">
-                <div class="column is-4 misio-seleccio">
                     <draggable
                         :list="selectBatallesByJoc('saga')"
                         group="batalles"
@@ -114,7 +115,8 @@
                         <div class="tarja" v-for="element in selectBatallesByJoc('saga')" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
-                <div class="column is-4 is-offset-1 misio-seleccio">
+                <div class="column is-4-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
+                    <div class="windlass has-text-centered" style="font-size: 40px;">CLASH OF SPEARS</div>
                     <draggable
                         :list="selectBatallesByJoc('clash')"
                         group="batalles"
@@ -128,6 +130,14 @@
                     </draggable>
                 </div>
             </div>
+            <div class="columns">
+                <div class="column is-4 ">
+                    
+                </div>
+                <div class="column is-4 is-offset-1 ">
+                    
+                </div>
+            </div>
         </div>
       <router-view></router-view>
           </section>
@@ -139,6 +149,9 @@ import draggable from "vuedraggable";
 import { mapGetters, mapActions } from 'vuex'
 import axios from "axios";
 
+import SvgIcon from '@jamescoyle/vue-icon'
+import { mdiLock, mdiStopCircleOutline } from '@mdi/js'
+
 /**
  * TODO: Mirar de no portar una dobla contabilitat de les contrntacions,
  * a la store i al component i gesionar-ho tot des de la store
@@ -148,9 +161,12 @@ export default {
     name: 'confrontacions',
     components: {
       draggable,
+      SvgIcon,
     },
     data: function(){
         return{
+            candau: mdiLock,
+            finalIcon: mdiStopCircleOutline,
             modell: [],
             enabled: true,
             bando_A: [],
@@ -505,4 +521,14 @@ export default {
         }
     }
 }
+
+
+.xboto {
+    button span.icon{
+    @include mobile {
+        margin-right: calc(-0.5em - 1px) !important;
+    }
+}
+}
+
 </style>

@@ -1,14 +1,75 @@
 <template>
     <section class="campanya">
         <div class="container " style="margin-bottom:40px;">
-            <div class="cinzel-regular title is-size-4">Campanya: <span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
-            <div class="title cinzel-regular is-size-4">Bando A: <span class="is-size-2">{{punts_bando_A}}</span> Bando B: <span class="is-size-2">{{punts_bando_B}}</span></div>
-            <div class="title cinzel-regular is-size-4" v-if="isCalculat">Generals: Bando A: <span class="is-size-2">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</span> Bando B: <span class="is-size-2">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</span></div>
-            <div class="title"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1}}">Nou torn</router-link></div>
+            <div class="cinzel-regular title is-size-4 has-text-centered"><span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
+            <div class="cinzel-regular title is-size-4 has-text-centered">Puntuació</div>
+            <div class="columns cinzel-regular is-mobile  is-hidden-tablet">
+                <div class="column is-6 ">
+                    <div class="columns">
+                        <div class="column">
+                            <div class="has-text-centered">
+                              <p class="heading">Bando A</p>
+                              <p class="title irrpb">{{punts_bando_A}}</p>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class=" has-text-centered">
+                              <p class="heading">General Bando A</p>
+                              <p class="title">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</p>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="column is-6">
+                    <div class="columns">
+                        <div class="column">
+                            <div class=" has-text-centered">
+                              <p class="heading">Bando B</p>
+                              <p class="title irrpb">{{punts_bando_B}}</p>
+                          </div>
+                        </div>
+                        <div class="column">
+                            <div class=" has-text-centered">
+                              <p class="heading">General Bando B</p>
+                              <p class="title">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</p>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="level cinzel-regular is-hidden-mobile">
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">General Bando A</p>
+                  <p class="title">{{maxs[0]['jugador']}} {{maxs[0]['punts']}}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Bando A</p>
+                  <p class="title irrpb">{{punts_bando_A}}</p>
+                </div>
+              </div>
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">Bando B</p>
+                  <p class="title irrpb">{{punts_bando_B}}</p>
+                </div>
+              </div>
+              
+              <div class="level-item has-text-centered">
+                <div>
+                  <p class="heading">General Bando B</p>
+                  <p class="title">{{maxs[1]['jugador']}} {{maxs[1]['punts']}}</p>
+                </div>
+              </div>
+            </nav>
+            <div class="content has-text-centered"><button class="button is-primary is-outlined is-medium noutorn"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1}}">Nou torn</router-link></button></div>
         </div>
         <div class="container confrontacions">
             <div class="columns is-multiline">
-                <div class="column is-4" v-for="element in Object.keys(grouped_display)">
+                <div class="column" v-for="element in Object.keys(grouped_display)">
                     <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
@@ -185,6 +246,19 @@ export default {
 .campanya {
 .title a {
     color: #f1592a;
+}
+}
+
+.title.irrpb {color: #f1592a;}
+button.noutorn {
+    &:hover a{
+        color: white;
+    }
+
+    a {
+    color: #f1592a;
+    font-weight: bold;;
+    
 }
 }
 

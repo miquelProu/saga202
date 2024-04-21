@@ -8,7 +8,7 @@
           </div>
       </div>
       <div class="container">
-          <div class="title colonna titolot mt-6 mb-6" style="color: #F1592AFF; font-size: 6rem;">CAMPANYES d'HISTÒRIC</div>
+          <div class="colonna titolot mt-6 mb-6" style="color: #F1592AFF;">CAMPANYES d'HISTÒRIC</div>
       </div>
     <div class="container">
         <div class="tile is-ancestor">
@@ -19,15 +19,18 @@
                         <router-link class="has-text-centered" style="color: #F1592AFF;" :to="{name: 'campanya', params: {id: c.id} }">{{c.nom}}</router-link>
                     </div>
                 </div>
-                <div class="tile is-child box">
+                <div class="tile is-child box content">
                     <p class="title">Últims canvis</p>
-                    <p>Afegit les mission i suport per les partides de Clash of Spears</p>
+                    <ul class="has-text-left">
+                        <li>Versió mòbil beta 0.1</li>
+                        <li>Afegit les mission i suport per les partides de Clash of Spears</li>
+                    </ul>
                 </div>
             </div>
             <div class="tile is-parent">
                 <div class="tile is-child box has-text-left content">
                     <p class="title has-text-centered">Instruccións</p>
-                    <p><em>Aquesta beta 0.2.0.1 és més robusta que l'anterior, que no anava bé, encara que no guanya en característiques, penso que gairebé funciona, el que sí que és prou funcional per fer-la servir.</em></p>
+                    <p><em>Aquesta beta 0.2.1.1 és més robusta que l'anterior, que no anava bé, encara que no guanya en característiques, penso que gairebé funciona, el que sí que és prou funcional per fer-la servir.</em></p>
                     <p>Els generals es gestionen globalment i s'escullen per cada campanya, si cal afegir algun general, hem d'anar a <strong>Gestionar generals</strong> per afegir-lo</p>
                     <p>Els passos per crear i portar una campanya serien:</p>
                     <ul>
@@ -77,8 +80,11 @@ export default {
 @import "./../scss/estil.scss";
 
 .titolot {
-    font-size: 6rem;
+    font-size: 65px;
     color: $irrpb;
+    @include mobile {
+        font-size: 3em;
+    }
 }
 
 </style>
