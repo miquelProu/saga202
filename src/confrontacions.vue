@@ -13,7 +13,7 @@
                 <div class="column is-2-tablet is-2-mobile bandoA">
                     <draggable
                         :list="bando_A"
-                        :disabled="false"
+                        :disabled="isAllFinal"
                         class="list-group"
                         ghost-class="ghost"
                         :move="checkMove"
@@ -28,6 +28,7 @@
                 <div class="column is-5-tablet is-6-mobile misio">
                     <draggable
                         :list="batalles_selected"
+                        :disabled="isAllFinal"
                         group="batalles"
                         class="list-group"
                         ghost-class="ghost"
@@ -64,7 +65,7 @@
                 <div class="column is-2-tablet is-2-mobile bandoB">
                     <draggable
                         :list="bando_B"
-                        :disabled="false"
+                        :disabled="isAllFinal"
                         class="list-group"
                         ghost-class="ghost"
                         :move="checkMove"
@@ -78,23 +79,23 @@
 
                     <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumn" :key="idx">
                         <button 
-                            class="button mb-0" 
+                            class="button mb-0 is-small" 
                             @click="tancar(element, idx)" 
                             :disabled="isDisabled(element.id, 'tancar')"
                         >
-                            <span class="icon">
-                              <svg-icon type="mdi" :path="candau"></svg-icon>
+                            <span class="icon is-small">
+                              <svg-icon :size="12" type="mdi" :path="candau"></svg-icon>
                             </span>
                             <span  class=" is-hidden-mobile ">Tancar</span>
                         </button>
 
                         <button 
-                            class="button py-1 mb-0" 
+                            class="button py-1 mb-0 is-small" 
                             @click="final(element.id, idx)" 
                             :disabled="isDisabled(element.id, 'final')"
                         >
                             <span class="icon">
-                              <svg-icon type="mdi" :path="finalIcon"></svg-icon>
+                              <svg-icon :size="12" type="mdi" :path="finalIcon"></svg-icon>
                             </span>
                             <span class=" is-hidden-mobile ">Final</span></button>
                     </div>
@@ -208,7 +209,7 @@ export default {
             batalles_selected:[],
             confrontacions:[],
             dragging: false,
-            last_ID_salvat: 0,
+            isAllFinal: false,
             torn: 0,
         }
     },
@@ -414,12 +415,20 @@ export default {
         //console.log(this.getConfrontacionsByTorn.length);
 
         console.log("Creo els models");
+
+        let finalCounter = 0;
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
             self.modell.push({A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'], B:(f['bandoB']['punts'] == "0") ? null : f['bandoB']['punts']});
             // EN tots els casos esborrem dels selectables les batelles escollides
             self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
+            if(f.isFinal == "1"){
+                finalCounter++;
+            }
+        }
+        if (finalCounter == this.getUsersByCampanyaActual.length / 2){
+            this.isAllFinal = true;
         }
         // Si no esta el torn ple, afegim els usuaris sense confrontacio
         if (this.getConfrontacionsByTorn.length !== this.getUsersByCampanyaActual.length / 2){
