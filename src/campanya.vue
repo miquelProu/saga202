@@ -233,6 +233,8 @@ export default {
         let self = this;
         console.log("CAMPANYA!!",this.$route);
         this.campanya_id =  this.$route.params.id;
+        console.log("MEDIA QUERY", this.$mq);
+
 
         this.start();
 
