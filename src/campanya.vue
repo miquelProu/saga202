@@ -18,7 +18,7 @@
                               <p class="title  is-size-3"><span class="is-size-5">{{maxs[0]['jugador']}}</span> {{maxs[0]['punts']}}</p>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
                 <div class="column is-6">
@@ -57,7 +57,7 @@
                   <p class="title irrpb">{{punts_bando_B}}</p>
                 </div>
               </div>
-              
+
               <div class="level-item has-text-centered">
                 <div>
                   <p class="heading">General Bando B</p>
@@ -115,7 +115,7 @@ export default {
             isCalculat: false,
             punts_bando_A: 0,
             punts_bando_B: 0,
-            maxs: [],
+            maxs: [{jugador: '', punts: null},{jugador: '', punts: null}],
             campanya_id: null,
 
             bando_A: [],
@@ -148,7 +148,7 @@ export default {
             console.log(to, from);
             this.campanya_id =  this.$route.params.id;
             this.start();
-        
+
         }
     },
     computed: {
@@ -165,13 +165,12 @@ export default {
         }),
         calculs(){
             let self = this;
-            let pa = 0;
-            let pb = 0;
             for (const f of this.getConfrontacions){
                 self.punts_bando_A = self.punts_bando_A + parseInt(f.bandoA.punts);
                 self.punts_bando_B = self.punts_bando_B + parseInt(f.bandoB.punts);
             }
 
+            this.maxs = [];
             const byUserA = Object.groupBy(this.getConfrontacions, ({bandoA}) => bandoA.name);
             this.maxs.push(this.calculBando(byUserA, 'bandoA'));
             const byUserB = Object.groupBy(this.getConfrontacions, ({bandoB}) => bandoB.name);
@@ -236,114 +235,131 @@ export default {
         this.campanya_id =  this.$route.params.id;
 
         this.start();
-        
+
     }
 }
 </script>
 
 <style lang="scss">
 @import "./scss/estil.scss";
-.campanya {
-.title a {
-    color: #f1592a;
-}
-}
 
-.title.irrpb {color: #f1592a;}
-button.noutorn {
-    &:hover a{
-        color: white;
+.campanya {
+    .title a {
+        color: #f1592a;
     }
 
-    a {
-    color: #f1592a;
-    font-weight: bold;;
-    
-}
-}
 
-.bandoA .tarja.selected {
-    margin-right: 0;
-    border-color:green;
-    border-right-width: 0;
-}
-.misio .tarja {
-    padding-top: 7px;
-    padding-bottom: 7px;
-    &.selected {
+    .title.irrpb {
+        color: #f1592a;
+    }
+
+    button.noutorn {
+        &:hover a {
+            color: white;
+        }
+
+        a {
+            color: #f1592a;
+            font-weight: bold;;
+
+        }
+    }
+
+    .bandoA .tarja.selected {
         margin-right: 0;
-        margin-left: 0;
         border-color: green;
         border-right-width: 0;
+    }
+
+    .misio .tarja {
+        padding-top: 7px;
+        padding-bottom: 7px;
+
+        &.selected {
+            margin-right: 0;
+            margin-left: 0;
+            border-color: green;
+            border-right-width: 0;
+            border-left-width: 0;
+        }
+
+        &.columns.is-gapless {
+            margin-bottom: 5px !important;
+        }
+    }
+
+    .bandoB .tarja.selected {
+        margin-left: 0;
+        border-color: green;
         border-left-width: 0;
     }
 
-    &.columns.is-gapless {
-        margin-bottom: 5px !important;
-    }
-}
-.bandoB .tarja.selected {
-    margin-left: 0;
-    border-color:green;
-    border-left-width: 0;
-}
-.tarja {
-    text-align: center;
-    padding: 10px 20px;
-    border: 1px solid $irrpb;
-    margin-top: 5px;
-    &:first-child{
-        margin-top: 0;
-    }
-}
-.ghost {
-    opacity: 0.5;
-    background: #c8ebfb;
-}
-.campanya .list-group{
-    padding-top:30px;
-}
-
-.bandoA {
     .tarja {
-        margin-right: 0.75rem;
-    }
-}
-.misio {
-    .tarja {
-        margin-right: 0.75rem;
-        margin-left: 0.75rem;
+        text-align: center;
+        padding: 10px 20px;
+        border: 1px solid $irrpb;
+        margin-top: 5px;
 
-        input {
-            text-align: center;
+        &:first-child {
+            margin-top: 0;
         }
     }
-}
-.bandoB {
-    .tarja {
-        margin-left: 0.75rem;
-    }
-}
 
-.botons {
-    .boto {
-        padding: 3px 0;
-        text-align: left;
-        margin-left: 0.75rem;
-        margin-bottom: 5px;
-        &:last-child{
-            margin-bottom: 0;
-        }
-        .button{
-            margin-bottom: 0;
+    .ghost {
+        opacity: 0.5;
+        background: #c8ebfb;
+    }
+
+    .campanya .list-group {
+        padding-top: 30px;
+    }
+
+    .bandoA {
+        .tarja {
+            margin-right: 0.75rem;
         }
     }
-}
-.confrontacions {
-    table thead tr td a {
-        color: $irrpb;
-        font-size: 1.5rem;
-        font-weight: bold;
+
+    .misio {
+        .tarja {
+            margin-right: 0.75rem;
+            margin-left: 0.75rem;
+
+            input {
+                text-align: center;
+            }
+        }
+    }
+
+    .bandoB {
+        .tarja {
+            margin-left: 0.75rem;
+        }
+    }
+
+    .botons {
+        .boto {
+            padding: 3px 0;
+            text-align: left;
+            margin-left: 0.75rem;
+            margin-bottom: 5px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            .button {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .confrontacions {
+        table thead tr td a {
+            color: $irrpb;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
     }
 }
 </style>

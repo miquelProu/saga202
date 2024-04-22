@@ -1,9 +1,9 @@
 <template>
      <section class="confrontacio">
-          <div class="container">
+          <div class="container" style="margin-bottom: 30px;">
               <div class="columns is-gapless">
                   <div class="column is-9">
-                    <div class="title cinzel-regular">Confrontacións torn {{ torn }} campanya {{ getCampanyaActual.nom }} </div>
+                      <div class="title cinzel-regular has-text-centered is-size-4">{{ getCampanyaActual.nom }} <span class="is-size-3">Torn {{ torn }}</span></div>
                   </div>
               </div>
           </div>
@@ -11,6 +11,9 @@
         <div class="container">
             <div class="columns is-gapless is-mobile">
                 <div class="column is-2-tablet is-2-mobile bandoA">
+                    <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)" v-for="(element, idx) in bandoAColumn" :key="element.id">
+                        <div>{{ element.name }}</div>
+                    </div>
                     <draggable
                         :list="bando_A"
                         :disabled="isAllFinal"
@@ -20,12 +23,37 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" :class="isSelected('bandoA', element.id, idx)" v-for="(element, idx) in bandoAColumn" :key="element.id">
+                        <div class="tarja" :class="isSelected('bandoA', element.id, idx)" v-for="(element, idx) in bando_A" :key="element.id">
                             <div>{{ element.name }}</div>
                         </div>
                     </draggable>
                 </div>
                 <div class="column is-5-tablet is-6-mobile misio">
+
+                    <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
+                        <div class="column one-three-fifths">
+                            <div class="field" v-if="existControntacio(element.id, idx)">
+                                <p class="control has-text-centered">
+                                    <input
+                                        class="input is-small has-text-centered"
+                                        type="text"
+                                        placeholder="0"
+                                        v-model="modell[idx]['A']"
+                                        :disabled="isDisabled(element.id, 'final')">
+                                </p>
+                            </div>
+                        </div>
+                        <div class="column is-three-fifths">{{ element.name }}</div>
+                        <div class="column one-three-fifths">
+                            <div class="field "  v-if="existControntacio(element.id, idx)">
+                                <p class="control has-text-centered">
+                                    <input class="input is-small has-text-centered" type="text" placeholder="0"
+                                           v-model="modell[idx]['B']"
+                                           :disabled="isDisabled(element.id, 'final')">
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <draggable
                         :list="batalles_selected"
                         :disabled="isAllFinal"
@@ -36,7 +64,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
+                        <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batalles_selected" :key="element.id">
                             <div class="column one-three-fifths">
                                     <div class="field" v-if="existControntacio(element.id, idx)">
                                         <p class="control">
@@ -63,6 +91,7 @@
                     </draggable>
                 </div>
                 <div class="column is-2-tablet is-2-mobile bandoB">
+                    <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
                     <draggable
                         :list="bando_B"
                         :disabled="isAllFinal"
@@ -72,33 +101,62 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bando_B" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
-                <div class="column is-3-tablet is-2-mobile botons" style="margin-top:30px;">
 
-                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumn" :key="idx">
-                        <button 
-                            class="button mb-0 is-small" 
-                            @click="tancar(element, idx)" 
+                <div class="column is-3-tablet is-2-mobile botons" xstyle="margin-top:30px;">
+
+
+                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
+                        <button
+                            class="button mb-0"
+                            @click="tancar(element, idx)"
                             :disabled="isDisabled(element.id, 'tancar')"
                         >
                             <span class="icon is-small">
-                              <svg-icon :size="12" type="mdi" :path="candau"></svg-icon>
+                              <svg-icon :size="24" type="mdi" :path="candau"></svg-icon>
                             </span>
                             <span  class=" is-hidden-mobile ">Tancar</span>
                         </button>
 
-                        <button 
-                            class="button py-1 mb-0 is-small" 
-                            @click="final(element.id, idx)" 
+                        <button
+                            class="button py-1 mb-0"
+                            @click="final(element.id, idx)"
                             :disabled="isDisabled(element.id, 'final')"
                         >
                             <span class="icon">
-                              <svg-icon :size="12" type="mdi" :path="finalIcon"></svg-icon>
+                              <svg-icon :size="24" type="mdi" :path="finalIcon"></svg-icon>
                             </span>
                             <span class=" is-hidden-mobile ">Final</span></button>
                     </div>
+
+
+
+
+                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumn" :key="idx">
+                        <button
+                            class="button mb-0"
+                            @click="tancar(element, idx)"
+                            :disabled="isDisabled(element.id, 'tancar')"
+                        >
+                            <span class="icon is-small">
+                              <svg-icon :size="24" type="mdi" :path="candau"></svg-icon>
+                            </span>
+                            <span  class=" is-hidden-mobile ">Tancar</span>
+                        </button>
+
+                        <button
+                            class="button py-1 mb-0"
+                            @click="final(element.id, idx)"
+                            :disabled="isDisabled(element.id, 'final')"
+                        >
+                            <span class="icon">
+                              <svg-icon :size="24" type="mdi" :path="finalIcon"></svg-icon>
+                            </span>
+                            <span class=" is-hidden-mobile ">Final</span></button>
+                    </div>
+
                 </div>
             </div>
             <div class="columns mt-6">
@@ -113,7 +171,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in selectBatallesByJoc('saga')" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja has-text-centered" v-for="element in selectBatallesByJoc('saga')" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
                 <div class="column is-4-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
@@ -127,21 +185,12 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in selectBatallesByJoc('clash')" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja has-text-centered" v-for="element in selectBatallesByJoc('clash')" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
             </div>
-            <div class="columns">
-                <div class="column is-4 ">
-                    
-                </div>
-                <div class="column is-4 is-offset-1 ">
-                    
-                </div>
-            </div>
         </div>
-      <router-view></router-view>
-          </section>
+  </section>
 
 </template>
 
@@ -221,30 +270,15 @@ export default {
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
         }),
         //Creem llista calenta des de Vuex amb el bando A
-        bandoAColumnGrabat: function () {
+        bandoAColumn: function () {
             return this.getConfrontacionsByTorn.map(function (f) {
               return {name:f.bandoA.name, id:f.bandoA.id};
             });
         },
-        // Llista calenta que llistem amb el elements del Vuex mes els arrosegats pel compoenent
-        bandoAColumn: function () {
-            let ret = []
-            ret.push(...this.bandoAColumnGrabat);
-            ret.push(...this.bando_A);
-            
-            return ret;
-        },
-        bandoBColumnGrabat: function () {
+        bandoBColumn: function () {
           return this.getConfrontacionsByTorn.map(function (f) {
               return {name:f.bandoB.name, id:f.bandoB.id};
             });
-        },
-        bandoBColumn: function () {
-            let ret = []
-            ret.push(...this.bandoBColumnGrabat);
-            ret.push(...this.bando_B);
-            
-            return ret;
         },
         botonsColumnGrabat: function(){
             return this.getConfrontacionsByTorn.map(function(f){
@@ -253,13 +287,13 @@ export default {
         },
         botonsColumn: function(){
             let ret = [];
-            ret.push(...this.botonsColumnGrabat);
+            //ret.push(...this.botonsColumnGrabat);
             for (let i =0; i < this.batalles_selected.length; i++) {
                 ret.push({id: '99'});
             }
             return ret;
         },
-        batallesColumnGrabat: function(){
+        batallesColumn: function(){
             let self = this;
             let temp = [];
             for (const f of this.getConfrontacionsByTorn){
@@ -271,14 +305,6 @@ export default {
             }
             return temp;
         },
-        batallesColumn: function(){
-            let ret = []
-            ret.push(...this.batallesColumnGrabat);
-            ret.push(...this.batalles_selected);
-            
-            return ret;
-        },
-
     },
     methods: {
         ...mapActions({
@@ -296,12 +322,12 @@ export default {
             let arr = null;
             if (banda != 'batalla'){
                 arr = this.getConfrontacionsByTorn.filter((x) => x[banda]['id'] == id);
-                
+
             } else {
                 arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
             }
             return (!arr.length) ? '' : 'selected';
-            
+
         },
         existControntacio(id, idx){
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
@@ -332,9 +358,9 @@ export default {
             //L'Apunto a la BBDD
             let params = {
                 'id_campanya': this.$route.params.campanya_id,
-                'id_usuari_A': this.bandoAColumn[idx]['id'],
-                'id_batalla': this.batallesColumn[idx]['id'],
-                'id_usuari_B': this.bandoBColumn[idx]['id'],
+                'id_usuari_A': this.bando_A[idx]['id'],
+                'id_batalla': this.batalles_selected[idx]['id'],
+                'id_usuari_B': this.bando_B[idx]['id'],
                 'nPunts_A': 0,
                 'nPunts_B': 0,
                 'nTorn': this.torn,
@@ -351,26 +377,27 @@ export default {
             for (const f of Object.keys(params)){
                 text = text + '&' + f + '=' + params[f];
             }
-            //console.log(text);
+            console.log(text);
             const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
+            //const posts = {data: '23'}
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
                 let conf = {
                     id: posts.data,
-                    id_batalla: this.batallesColumn[idx]['id'],
+                    id_batalla: this.batalles_selected[idx]['id'],
                     isFinal: "0",
                     torn: this.torn,
-                    bandoA: this.bandoAColumn[idx],
-                    bandoB: this.bandoBColumn[idx]
+                    bandoA: this.bando_A[idx],
+                    bandoB: this.bando_B[idx]
                 };
                 // Esborro la confrontacio que ara guardarem a la store de la llista dels bandos no guardats
-                const iddx = this.bando_A.findIndex(function(x){return x.id == self.bandoAColumn[idx]['id']});
+                const iddx = this.bando_A.findIndex(function(x){return x.id == self.bando_A[idx]['id']});
                 console.log(iddx);
                 this.bando_A.splice(iddx, 1);
-                const idddx = this.bando_B.findIndex(function(x){return x.id == self.bandoBColumn[idx]['id']});
+                const idddx = this.bando_B.findIndex(function(x){return x.id == self.bando_B[idx]['id']});
                 this.bando_B.splice(idddx, 1);
                 //Esborro de la llista de batallas seleccionades, la que guardem a la store
-                const iddddx = this.batalles_selected.findIndex(function(x){return x.id == self.batallesColumn[idx]['id']});
+                const iddddx = this.batalles_selected.findIndex(function(x){return x.id == self.batalles_selected[idx]['id']});
                 this.batalles_selected.splice(iddddx, 1);
 
                 //Afegeixo tot l'obejcte confrontacio amb l'Id de l'insert a la store
@@ -388,8 +415,8 @@ export default {
                 console.log("UPDATE FINAL!!", posts.data);
             }
         },
-        
-        
+
+
         extractRepetits(coleccio, id, nom = "id"){
             coleccio = coleccio.filter(function( obj ) {
                 //console.log(obj[nom], id);
@@ -457,87 +484,119 @@ export default {
 <style lang="scss">
 @import "./scss/estil.scss";
 
-.bandoA .tarja.selected {
-    margin-right: 0;
-    border-color:green;
-    border-right-width: 0;
-}
-.confrontacio .misio .tarja {
-    padding-top: 10px;
-    padding-bottom: 10px;
-    &.selected {
-        margin-right: 0;
-        margin-left: 0;
-        border-color: green;
-        border-right-width: 0;
-        border-left-width: 0;
-        padding-top: 7px;
-        padding-bottom: 7px;
+.confrontacio {
+
+    .bandoA .tarja {
+        text-align: center;
+
+        &.nodrag {
+            margin-bottom: 5px;
+        }
+
+        &.selected {
+            margin-right: 0;
+            border-color: green;
+            border-right-width: 0;
+        }
     }
 
-    &.columns.is-gapless {
-        margin-bottom: 5px !important;
+    .misio .tarja {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        text-align: center;
+
+        &.nodrag {
+            margin-bottom: 5px;
+        }
+
+        &.selected {
+            margin-right: 0;
+            margin-left: 0;
+            border-color: green;
+            border-right-width: 0;
+            border-left-width: 0;
+            padding-top: 7px;
+            padding-bottom: 7px;
+        }
+
+        &.columns.is-gapless {
+            margin-bottom: 5px !important;
+        }
     }
+
+    .bandoB .tarja {
+        text-align: center;
+
+        &.nodrag {
+            margin-bottom: 5px;
+        }
+        &.selected {
+            margin-left: 0;
+            border-color: green;
+            border-left-width: 0;
+        }
 }
-.bandoB .tarja.selected {
-    margin-left: 0;
-    border-color:green;
-    border-left-width: 0;
-}
-.tarja {
-    padding: 10px 20px;
-    border: 1px solid $irrpb;
-    margin-top: 5px;
-    &:first-child{
-        margin-top: 0;
+
+    .tarja {
+        padding: 10px 20px;
+        border: 1px solid $irrpb;
+        margin-top: 5px;
+
+        &:first-child {
+            margin-top: 0;
+        }
     }
-}
-.ghost {
-    opacity: 0.5;
-    background: #c8ebfb;
-}
+
+    .ghost {
+        opacity: 0.5;
+        background: #c8ebfb;
+    }
+
+    /*
 .list-group{
     padding-top:30px;
 }
-
-.misio-seleccio .list-group{
-    padding-top: 0;
-}
-
-.bandoA {
-    .tarja {
-        margin-right: 0.75rem;
+*/
+    .misio-seleccio .list-group {
+        padding-top: 0;
     }
-}
 
-.bandoB {
-    .tarja {
-        margin-left: 0.75rem;
-    }
-}
-
-.botons {
-    .boto {
-        padding: 3px 0;
-        text-align: left;
-        margin-left: 0.75rem;
-        margin-bottom: 5px;
-        &:last-child{
-            margin-bottom: 0;
-        }
-        .button{
-            margin-bottom: 0;
+    .bandoA {
+        .tarja {
+            margin-right: 0.75rem;
         }
     }
-}
+
+    .bandoB {
+        .tarja {
+            margin-left: 0.75rem;
+        }
+    }
+
+    .botons {
+        .boto {
+            padding: 3px 0;
+            text-align: left;
+            margin-left: 0.75rem;
+            margin-bottom: 5px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            .button {
+                margin-bottom: 0;
+            }
+        }
+    }
 
 
-.xboto {
-    button span.icon{
-    @include mobile {
-        margin-right: calc(-0.5em - 1px) !important;
+    .xboto {
+        button span.icon {
+            @include mobile {
+                margin-right: calc(-0.5em - 1px) !important;
+            }
+        }
     }
 }
-}
-
 </style>

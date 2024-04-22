@@ -28,7 +28,7 @@
                         <button class="button" @click="guardar()">Guardar</button>
                       </div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -151,80 +151,93 @@ export default {
 <style lang="scss">
 @import "./scss/estil.scss";
 
-.bandoA .tarja.selected {
-    margin-right: 0;
-    border-color:green;
-    border-right-width: 0;
-}
-.misio .tarja {
-    padding-top: 7px;
-    padding-bottom: 7px;
-    &.selected {
+.defineix {
+    .bandoA .tarja.selected {
         margin-right: 0;
-        margin-left: 0;
         border-color: green;
         border-right-width: 0;
+    }
+
+    .misio .tarja {
+        padding-top: 7px;
+        padding-bottom: 7px;
+
+        &.selected {
+            margin-right: 0;
+            margin-left: 0;
+            border-color: green;
+            border-right-width: 0;
+            border-left-width: 0;
+        }
+
+        &.columns.is-gapless {
+            margin-bottom: 5px !important;
+        }
+    }
+
+    .bandoB .tarja.selected {
+        margin-left: 0;
+        border-color: green;
         border-left-width: 0;
     }
 
-    &.columns.is-gapless {
-        margin-bottom: 5px !important;
-    }
-}
-.bandoB .tarja.selected {
-    margin-left: 0;
-    border-color:green;
-    border-left-width: 0;
-}
-.tarja {
-    text-align: center;
-    padding: 10px 20px;
-    border: 1px solid $irrpb;
-    margin-top: 5px;
-    &:first-child{
-        margin-top: 0;
-    }
-}
-.ghost {
-    opacity: 0.5;
-    background: #c8ebfb;
-}
-.defineix .list-group{
-    padding-top:30px;
-}
-
-.bandoA {
     .tarja {
-        margin-right: 0.75rem;
-    }
-}
-.misio {
-    .tarja {
-        margin-right: 0.75rem;
-        margin-left: 0.75rem;
+        text-align: center;
+        padding: 10px 20px;
+        border: 1px solid $irrpb;
+        margin-top: 5px;
 
-        input {
-            text-align: center;
+        &:first-child {
+            margin-top: 0;
         }
     }
-}
-.bandoB {
-    .tarja {
-        margin-left: 0.75rem;
-    }
-}
 
-.botons {
-    .boto {
-        padding: 3px 0;
-        text-align: left;
-        margin-left: 0.75rem;
-        margin-bottom: 5px;
-        &:last-child{
-            margin-bottom: 0;
+    .ghost {
+        opacity: 0.5;
+        background: #c8ebfb;
+    }
+
+    .defineix .list-group {
+        padding-top: 30px;
+    }
+
+    .bandoA {
+        .tarja {
+            margin-right: 0.75rem;
         }
-        .button{
-            margin-bottom: 0;
+    }
+
+    .misio {
+        .tarja {
+            margin-right: 0.75rem;
+            margin-left: 0.75rem;
+
+            input {
+                text-align: center;
+            }
+        }
+    }
+
+    .bandoB {
+        .tarja {
+            margin-left: 0.75rem;
+        }
+    }
+
+    .botons {
+        .boto {
+            padding: 3px 0;
+            text-align: left;
+            margin-left: 0.75rem;
+            margin-bottom: 5px;
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            .button {
+                margin-bottom: 0;
+            }
         }
     }
 }
