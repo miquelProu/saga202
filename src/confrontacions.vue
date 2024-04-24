@@ -108,7 +108,7 @@
                 <div class="column is-3-tablet is-2-mobile botons" xstyle="margin-top:30px;">
 
 
-                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
+                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}"v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
@@ -134,7 +134,7 @@
 
 
 
-                    <div class="xboto buttons py-1 mb-1 ml-4" v-for="(element,idx) in botonsColumn" :key="idx">
+                    <div class="xboto buttons" v-for="(element,idx) in botonsColumn" :key="idx">
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
@@ -573,12 +573,18 @@ export default {
         }
     }
 
-    .botons {
+
+/*    .botons {
+        
         .boto {
             padding: 3px 0;
             text-align: left;
             margin-left: 0.75rem;
             margin-bottom: 5px;
+
+            @include mobile {
+
+            }
 
             &:last-child {
                 margin-bottom: 0;
@@ -588,10 +594,21 @@ export default {
                 margin-bottom: 0;
             }
         }
-    }
+    }*/
 
 
-    .xboto {
+    .xboto.buttons {
+        padding-top: 0.25rem;
+        padding-bottom: 0.25rem;
+        margin-bottom: 0.25rem;
+        margin-left: 1rem;
+
+        @include mobile {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            margin-left: 0.5rem;
+        }
+
         button span.icon {
             @include mobile {
                 margin-right: calc(-0.5em - 1px) !important;
