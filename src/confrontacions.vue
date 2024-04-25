@@ -108,7 +108,7 @@
                 <div class="column is-3-tablet is-2-mobile botons" xstyle="margin-top:30px;">
 
 
-                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}"v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
+                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
@@ -134,7 +134,7 @@
 
 
 
-                    <div class="xboto buttons" v-for="(element,idx) in botonsColumn" :key="idx">
+                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in botonsColumn" :key="idx">
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
