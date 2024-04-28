@@ -133,21 +133,28 @@ export default new Vuex.Store({
             }
         },
         async saveCampaya({commit, state}, campanya){
-            let paramA = '';
-            for (const f of campanya.bando_A){
-                paramA = paramA + '&bandoA[]=' + f.id;
+            console.log("STORE CAMPANYA", campanya);
+            let param = '';
+            let count = 0;
+            for (const bandol of campanya.bandols){
+                for (const f of bandol){
+                    param = param + '&bandols'+count+'[]=' + f.id;
+                }
+                count ++;
             }
-            let paramB = '';
-            for (const m of campanya.bando_B){
-                paramB = paramB + '&bandoB[]=' + m.id;
-            }
-            console.log(campanya.bando_A, campanya.bando_B);
-            console.log(paramA, paramB);
+            console.log("STORE PARAM", param);
 
-            const posts = await axios.get('https://historic.irregularesplanb.com/php/setCampanya.php?nom='+campanya.nom+'&torns='+campanya.nRondes+paramA+paramB);
+            let repe = (campanya.isRepeticio) ? '1' : '0';
+            console.log(repe);
+
+            const posts = await axios.get('https://historic.irregularesplanb.com/php/setCampanyav2.php?nom='
+                +campanya.nom+'&torns='+campanya.nRondes+'&joc='+campanya.joc+'&nbandols='+campanya.nBandols
+                +'&isrepeticio='+repe+param);
+            
             if(posts.data){
                 console.log("PUSH CAMPANYA", {id: posts.data, nom: campanya.nom, torns: campanya.nRondes});
-                commit('pushCampanya', {id: posts.data, nom: campanya.nom, torns: campanya.nRondes})
+                commit('pushCampanya', {id: posts.data, nom: campanya.nom, torns: campanya.nRondes, 
+                    joc: campanya.joc, is_repetir_misions: repe, bandols: campanya.nBandols});
             }
 
 
@@ -163,7 +170,7 @@ export default new Vuex.Store({
                 let self = this;
                 for (const f of state.campanyes){
                     if (f.id == campanyaId){
-                        commit('setCampanyaActual', {id: f.id, nom: f.nom});
+                        commit('setCampanyaActual', f);
                     }
                 }
             }

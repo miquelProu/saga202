@@ -1,43 +1,75 @@
 <template>
     <section class="defineix">
         <div class="container" style="margin-bottom:40px;">
-            <div class="columns">
-                <div class="column is-5 is-offset-1">
-
+            <div class="columns is-multiline is-vcentered">
+                <div class="column is-5">
                     <div class="field">
                       <label class="label">Nom de la campanya</label>
                       <div class="control">
                         <input class="input" type="text" v-model="nom" placeholder="Kill 'em all">
                       </div>
                     </div>
-
                 </div>
-                <div class="column is-3">
 
+                <div class="column is-3">
                     <div class="field">
                       <label class="label">Número de rondes</label>
                       <div class="control">
-                        <input class="input" type="text" placeholder="100" v-model="nRondes">
+                        <input class="input" type="text" placeholder="100" v-model.number="nRondes">
                       </div>
                     </div>
                 </div>
-                <div class="column is-2">
+
+                <div class="column is-3">
                     <div class="field">
-                      <label class="label is-hidden-mobile">&nbsp;</label>
+                      <label class="label">Número de bàndols</label>
+                      <div class="control">
+                        <input class="input" type="text" placeholder="2" v-model.number="nBandols">
+                      </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="column is-5">
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" name="joc" value="saga" v-model="joc" checked>
+                            SAGA
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="joc" value="clash" v-model="joc">
+                            CLASH OF SPEARS
+                        </label>
+                    </div>
+                </div>
+
+                
+
+                <div class="column is-3">
+                    <label class="checkbox">
+                        Repetir Missió ?
+                        <input type="checkbox" v-model="repetir">
+                    </label>
+                            
+                </div>
+
+                <div class="column is-3">
+                
                       <div class="control">
                         <button class="button" @click="guardar()">Guardar</button>
                       </div>
-                    </div>
-
                 </div>
+
             </div>
+
         </div>
         <div class="container">
-            <div class="columns">
-                <div class="column is-3-tablet is-10-mobile is-offset-1-mobile">
-                    <div class="title cinzel-regular has-text-centered">Bando A</div>
+            <div class="columns is-multiline">
+                <div class="column" v-for="(x, idx) in old_nBandols*1">
+                    <div class="title cinzel-regular has-text-centered">Bando {{String.fromCharCode(idx+65)}}</div>
                     <draggable
-                        :list="bando_A"
+                        v-model="bandols_list[idx]"
                         group="users"
                         :disabled="false"
                         class="list-group"
@@ -46,12 +78,12 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in bando_A" :key="element.id">
+                        <div class="tarja" v-for="element in bandols_list[idx]" :key="element.id">
                             <div>{{ element.name }}</div>
                         </div>
                     </draggable>
                 </div>
-                <div class="column is-3-tablet is-10-mobile is-offset-1-mobile">
+                <!--div class="column is-3-tablet is-10-mobile is-offset-1-mobile">
                     <div class="title cinzel-regular has-text-centered">Bando B</div>
                     <draggable
                         :list="bando_B"
@@ -67,12 +99,12 @@
                             <div>{{ element.name }}</div>
                         </div>
                     </draggable>
-                </div>
-                <div class="column is-4-tablet is-10-mobile is-offset-1-mobile is-offset-1-tablet">
+                </div -->
+                <div class="column">
                     <div class="title cinzel-regular has-text-centered">Generals</div>
                     <draggable
-                        :list="getUsers"
-                        group="users"
+                        :list="generals"
+                        :group="{name: 'users', put: false}"
                         :disabled="false"
                         class="list-group"
                         ghost-class="ghost"
@@ -80,7 +112,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja" v-for="element in getUsers" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja" v-for="element in generals" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
             </div>
@@ -108,13 +140,36 @@ export default {
             //users:[],
             dragging: false,
             nRondes: null,
+            nBandols: 2,
+            old_nBandols: 2,
             nom: '',
+            bandols_list:[],
+            generals:[],
+            joc: 'saga',
+            repetir: false,
         }
     },
     computed: {
         ...mapGetters({
             getUsers: 'getUsers'
         }),
+    },
+    watch: {
+        nBandols(val){
+            console.log("WATCH!!");
+            console.log(val, this.old_nBandols);
+            if (val && val != '' && val != this.old_nBandols && val != "0"){
+                console.log("entro");
+                let self = this;
+                this.bandols_list = [];
+                for (let f = 0; f < val; f++){
+                    self.bandols_list[f] = [];
+                }
+                this.old_nBandols = this.nBandols;
+                this.generals = [];
+                this.generals.push(...this.getUsers)
+            }
+        }
     },
     methods: {
         ...mapActions({
@@ -131,19 +186,28 @@ export default {
             let obj = {
                 nom: self.nom,
                 nRondes: self.nRondes,
-                bando_A: self.bando_A,
-                bando_B: self.bando_B
+                bandols: self.bandols_list,
+                nBandols: self.nBandols,
+                joc: self.joc,
+                isRepeticio: self.repetir,
             };
             this.saveCampaya(obj);
             router.push({ name: 'home'});
         }
     },
     mounted: function(){
+        let self = this;
         console.log("HOLS DEFINIR CAMAPANYA");
         this.getUsersFromDB().then(() => {
             console.log("GET USERS FROM DB TROUGHT THE STORE");
             console.log(this.getUsers);
+            self.generals = [];
+            self.generals.push(...self.getUsers)
         });
+        
+        for (let f = 0; f < this.nBandols; f++){
+                self.bandols_list[f] = [];
+            }
     }
 }
 </script>
