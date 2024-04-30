@@ -16,6 +16,7 @@
                     </div>
                     <draggable
                         :list="bando_A"
+                        group="users"
                         :disabled="isAllFinal"
                         class="list-group"
                         ghost-class="ghost"
@@ -94,6 +95,7 @@
                     <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
                     <draggable
                         :list="bando_B"
+                        group="users"
                         :disabled="isAllFinal"
                         class="list-group"
                         ghost-class="ghost"
@@ -159,11 +161,12 @@
 
                 </div>
             </div>
+
             <div class="columns mt-6">
-                <div class="column is-4-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
-                    <div class="colonna has-text-centered" style="font-size: 65px;margin-top: -10px;">SAGA</div>
+                <div class="column is-5-tablet is-offset-2-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
+                    <div class="colonna has-text-centered" :class="getCampanyaActual.joc == 'saga' ? 'colonna' : 'windlass'" style="font-size: 65px;margin-top: -10px;text-transform: uppercase;">{{this.getCampanyaActual.joc}}</div>
                     <draggable
-                        :list="selectBatallesByJoc('saga')"
+                        :list="batalles_selectables"
                         group="batalles"
                         class="list-group"
                         ghost-class="ghost"
@@ -171,21 +174,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja has-text-centered" v-for="element in selectBatallesByJoc('saga')" :key="element.id">{{ element.name }}</div>
-                    </draggable>
-                </div>
-                <div class="column is-4-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile misio-seleccio">
-                    <div class="windlass has-text-centered" style="font-size: 40px;">CLASH OF SPEARS</div>
-                    <draggable
-                        :list="selectBatallesByJoc('clash')"
-                        group="batalles"
-                        class="list-group"
-                        ghost-class="ghost"
-                        @change="checkMove"
-                        @start="dragging = true"
-                        @end="dragging = false"
-                    >
-                        <div class="tarja has-text-centered" v-for="element in selectBatallesByJoc('clash')" :key="element.id">{{ element.name }}</div>
+                        <div class="tarja has-text-centered" v-for="element in batalles_selectables" :key="element.id">{{ element.name }}</div>
                     </draggable>
                 </div>
             </div>
@@ -202,10 +191,7 @@ import axios from "axios";
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiLock, mdiStopCircleOutline } from '@mdi/js'
 
-/**
- * TODO: Mirar de no portar una dobla contabilitat de les contrntacions,
- * a la store i al component i gesionar-ho tot des de la store
- * */
+import {getBatallesByJoc} from "@/batalles";
 
 export default {
     name: 'confrontacions',
@@ -221,7 +207,7 @@ export default {
             enabled: true,
             bando_A: [],
             bando_B: [],
-            batalles_noms:[
+            /*batalles_noms:[
                 {name: "Bienes de valor", id: 0, joc: 'saga'},
                 {name: "Reclamar el territorio", id: 1, joc: 'saga'},
                 {name: "Festines y saqueos", id: 2, joc: 'saga'},
@@ -254,7 +240,9 @@ export default {
                 {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
                 {name: "Proyección de fuerza", id: 13, joc: 'clash'},
                 {name: "Rescate", id: 14, joc: 'clash'},
-            ],
+            ],*/
+            batalles_selectables: [],
+            batalles_noms: [],
             batalles_selected:[],
             confrontacions:[],
             dragging: false,
@@ -350,7 +338,10 @@ export default {
             //console.log(e, Object.keys(e)[0]);
             if (Object.keys(e)[0] === "added") {
                 console.log("ADDED", e.added.element.id);
-                this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
+                console.log("IS REPETIR MISSIO", this.getCampanyaActual.is_repetir_misions);
+                if (this.getCampanyaActual.is_repetir_misions == "0") {
+                    this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
+                }
             }
         },
         tancar: function(id, idx) {
@@ -434,21 +425,34 @@ export default {
             self.modell.push({A:f['bandoA']['punts'], B:f['bandoB']['punts']});
         }
     },
+
+/*    bandols: "2"
+    id: "32"
+    is_repetir_misions: "0"
+    joc: "saga"
+    nom: "Prova v2 2 bandos"
+    torns: "4"
+ */
     mounted: function(){
         let self = this;
         console.log(this.$route.params.campanya_id, this.$route.params.torn);
         this.torn = this.$route.params.torn;
         this.setConfrontacioTorn(this.torn);
-        //console.log(this.getConfrontacionsByTorn.length);
+        console.log("GET CAMPANYA ACTUAL", this.getCampanyaActual);
+        console.log("GET CONFRONTACIO BY TORN", this.getConfrontacionsByTorn);
+
+
+        this.batalles_selectables.push(...getBatallesByJoc(this.getCampanyaActual.joc));
+        this.batalles_noms.push(...getBatallesByJoc(this.getCampanyaActual.joc));
 
         console.log("Creo els models");
 
-        let finalCounter = 0;
+        /*let finalCounter = 0;
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
             self.modell.push({A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'], B:(f['bandoB']['punts'] == "0") ? null : f['bandoB']['punts']});
-            // EN tots els casos esborrem dels selectables les batelles escollides
+            // EN tots els casos esborrem dels selectables les batalles escollides
             self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
             if(f.isFinal == "1"){
                 finalCounter++;
@@ -456,7 +460,10 @@ export default {
         }
         if (finalCounter == this.getUsersByCampanyaActual.length / 2){
             this.isAllFinal = true;
-        }
+        }*/
+
+
+
         // Si no esta el torn ple, afegim els usuaris sense confrontacio
         if (this.getConfrontacionsByTorn.length !== this.getUsersByCampanyaActual.length / 2){
             console.log("EL TORN NO ÉS PLE");
@@ -467,12 +474,21 @@ export default {
                 arr = arr.filter((x) => f.bandoA.id != x.id_usuari);
                 arr = arr.filter((x) => f.bandoB.id != x.id_usuari);
             }
-            //console.log("ARR", arr);
-            for (const f of arr){
-                if (f.bando == "0"){
-                    self.bando_A.push({id: f.id_usuari, name: f.nom});
-                } else {
-                    self.bando_B.push({id: f.id_usuari, name: f.nom});
+            console.log("ARR", arr);
+            for (const [idx, f] of arr.entries()){
+                if (this.getCampanyaActual.bandols == "2") {
+
+                    if (f.bando == "0") {
+                        self.bando_A.push({id: f.id_usuari, name: f.nom});
+                    } else {
+                        self.bando_B.push({id: f.id_usuari, name: f.nom});
+                    }
+                } else if (this.getCampanyaActual.bandols == "1") {
+                    if(idx % 2 == 0){
+                        self.bando_A.push({id: f.id_usuari, name: f.nom});
+                    } else {
+                        self.bando_B.push({id: f.id_usuari, name: f.nom});
+                    }
                 }
             }
 
@@ -575,7 +591,7 @@ export default {
 
 
 /*    .botons {
-        
+
         .boto {
             padding: 3px 0;
             text-align: left;
