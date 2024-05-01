@@ -70,7 +70,7 @@
                                     <div class="field" v-if="existControntacio(element.id, idx)">
                                         <p class="control">
                                             <input
-                                            class="input is-small"
+                                            class="input is-small mr-1"
                                             type="text"
                                             placeholder="0"
                                             v-model="modell[idx]['A']"
@@ -78,11 +78,11 @@
                                         </p>
                                     </div>
                             </div>
-                            <div class="column is-three-fifths">{{ element.name }}</div>
+                            <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
                             <div class="column one-three-fifths">
                                 <div class="field "  v-if="existControntacio(element.id, idx)">
                                         <p class="control">
-                                            <input class="input is-small" type="text" placeholder="0"
+                                            <input class="input is-small ml-1" type="text" placeholder="0"
                                             v-model="modell[idx]['B']"
                                             :disabled="isDisabled(element.id, 'final')">
                                         </p>
@@ -167,7 +167,7 @@
                     <div class="colonna has-text-centered" :class="getCampanyaActual.joc == 'saga' ? 'colonna' : 'windlass'" style="font-size: 65px;margin-top: -10px;text-transform: uppercase;">{{this.getCampanyaActual.joc}}</div>
                     <draggable
                         :list="batalles_selectables"
-                        group="batalles"
+                        :group="group_batalles"
                         class="list-group"
                         ghost-class="ghost"
                         @change="checkMove"
@@ -248,6 +248,7 @@ export default {
             dragging: false,
             isAllFinal: false,
             torn: 0,
+            group_batalles: null,
         }
     },
     watch: {},
@@ -336,13 +337,14 @@ export default {
         checkMove: function(e) {
             //console.log("Future index: " + e);
             //console.log(e, Object.keys(e)[0]);
-            if (Object.keys(e)[0] === "added") {
+            /*if (Object.keys(e)[0] === "added") {
                 console.log("ADDED", e.added.element.id);
                 console.log("IS REPETIR MISSIO", this.getCampanyaActual.is_repetir_misions);
                 if (this.getCampanyaActual.is_repetir_misions == "0") {
+                    console.log("ENTER extractRepetits");
                     this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
                 }
-            }
+            }*/
         },
         tancar: function(id, idx) {
             console.log("TANCAR", idx);
@@ -445,9 +447,11 @@ export default {
         this.batalles_selectables.push(...getBatallesByJoc(this.getCampanyaActual.joc));
         this.batalles_noms.push(...getBatallesByJoc(this.getCampanyaActual.joc));
 
+        this.group_batalles = {name: 'batalles', pull: (this.getCampanyaActual.is_repetir_misions == "0") ? true : 'clone'};
+
         console.log("Creo els models");
 
-        /*let finalCounter = 0;
+        let finalCounter = 0;
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
@@ -460,7 +464,7 @@ export default {
         }
         if (finalCounter == this.getUsersByCampanyaActual.length / 2){
             this.isAllFinal = true;
-        }*/
+        }
 
 
 
