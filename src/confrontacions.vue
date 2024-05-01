@@ -44,7 +44,9 @@
                                 </p>
                             </div>
                         </div>
-                        <div class="column is-three-fifths">{{ element.name }}</div>
+
+                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pr-1 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pl-1 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
+
                         <div class="column one-three-fifths">
                             <div class="field "  v-if="existControntacio(element.id, idx)">
                                 <p class="control has-text-centered">
@@ -66,28 +68,11 @@
                         @end="dragging = false"
                     >
                         <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batalles_selected" :key="element.id">
-                            <div class="column one-three-fifths">
-                                    <div class="field" v-if="existControntacio(element.id, idx)">
-                                        <p class="control">
-                                            <input
-                                            class="input is-small mr-1"
-                                            type="text"
-                                            placeholder="0"
-                                            v-model="modell[idx]['A']"
-                                            :disabled="isDisabled(element.id, 'final')">
-                                        </p>
-                                    </div>
-                            </div>
-                            <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
-                            <div class="column one-three-fifths">
-                                <div class="field "  v-if="existControntacio(element.id, idx)">
-                                        <p class="control">
-                                            <input class="input is-small ml-1" type="text" placeholder="0"
-                                            v-model="modell[idx]['B']"
-                                            :disabled="isDisabled(element.id, 'final')">
-                                        </p>
-                                </div>
-                            </div>
+                            
+
+                            <div class="column is-three-fifths is-offset-one-fifth" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
+
+                            
                         </div>
                     </draggable>
                 </div>
@@ -111,26 +96,30 @@
 
 
                     <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
-                        <button
-                            class="button mb-0"
-                            @click="tancar(element, idx)"
-                            :disabled="isDisabled(element.id, 'tancar')"
-                        >
-                            <span class="icon is-small">
-                              <svg-icon :size="24" type="mdi" :path="candau"></svg-icon>
-                            </span>
-                            <span  class=" is-hidden-mobile ">Tancar</span>
-                        </button>
 
                         <button
+                            v-if = "isDisabled(element.id, 'final')"
                             class="button py-1 mb-0"
                             @click="final(element.id, idx)"
-                            :disabled="isDisabled(element.id, 'final')"
+                            :xdisabled="isDisabled(element.id, 'final')"
                         >
                             <span class="icon">
                               <svg-icon :size="24" type="mdi" :path="finalIcon"></svg-icon>
                             </span>
-                            <span class=" is-hidden-mobile ">Final</span></button>
+                            <span class=" is-hidden-mobile ">Final</span>
+                        </button>
+
+                        <button
+                            v-else
+                            class="button py-1 mb-0"
+                            @click="final(element.id, idx)"
+                            :xdisabled="isDisabled(element.id, 'punts')"
+                        >
+                            <span class="icon">
+                              <svg-icon :size="24" type="mdi" :path="puntsIcon"></svg-icon>
+                            </span>
+                            <span class=" is-hidden-mobile ">Puntuació</span>
+                        </button>
                     </div>
 
 
@@ -140,23 +129,13 @@
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
-                            :disabled="isDisabled(element.id, 'tancar')"
+                            :xdisabled="isDisabled(element.id, 'tancar')"
                         >
                             <span class="icon is-small">
                               <svg-icon :size="24" type="mdi" :path="candau"></svg-icon>
                             </span>
                             <span  class=" is-hidden-mobile ">Tancar</span>
                         </button>
-
-                        <button
-                            class="button py-1 mb-0"
-                            @click="final(element.id, idx)"
-                            :disabled="isDisabled(element.id, 'final')"
-                        >
-                            <span class="icon">
-                              <svg-icon :size="24" type="mdi" :path="finalIcon"></svg-icon>
-                            </span>
-                            <span class=" is-hidden-mobile ">Final</span></button>
                     </div>
 
                 </div>
@@ -189,9 +168,9 @@ import { mapGetters, mapActions } from 'vuex'
 import axios from "axios";
 
 import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiLock, mdiStopCircleOutline } from '@mdi/js'
+import { mdiLock, mdiStopCircleOutline, mdiPodiumGold } from '@mdi/js'
 
-import {getBatallesByJoc} from "@/batalles";
+import {batallesFile} from "@/batalles";
 
 export default {
     name: 'confrontacions',
@@ -203,10 +182,12 @@ export default {
         return{
             candau: mdiLock,
             finalIcon: mdiStopCircleOutline,
+            puntsIcon: mdiPodiumGold,
             modell: [],
             enabled: true,
             bando_A: [],
             bando_B: [],
+            batallesOrig: batallesFile,
             /*batalles_noms:[
                 {name: "Bienes de valor", id: 0, joc: 'saga'},
                 {name: "Reclamar el territorio", id: 1, joc: 'saga'},
@@ -302,6 +283,9 @@ export default {
             getUsersFromDB: 'getUsersFromDB',
             finalizeConfrontacioById: 'finalizeConfrontacioById',
         }),
+        getBatallesByJoc(joc) {
+            return this.batallesOrig.filter((x) => x.joc == joc);
+        },
         selectBatallesByJoc(joc){
             return this.batalles_selectables.filter(function( obj ) {
                 return obj.joc === joc ;
@@ -326,10 +310,14 @@ export default {
             let temp = false;
 
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
+            console.log("IS DISABLED", id);
+            console.log(arr);
             if (boto == 'tancar'){
-                temp = (!arr.length) ? false : true;
+                temp = (arr.length) ? false : true;
             } else if(boto == 'final'){
-                temp = (arr.length > 0 && arr[0].isFinal == "1");
+                temp = (arr.length > 0 && arr[0].isFinal == "0");
+            } else if (boto == 'punts'){
+                //temp = (arr.length > 0 && arr[0].isFinal == "0");
             }
 
             return temp;
@@ -371,8 +359,8 @@ export default {
                 text = text + '&' + f + '=' + params[f];
             }
             console.log(text);
-            const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
-            //const posts = {data: '23'}
+            //const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
+            const posts = {data: 103+idx+''};
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
                 let conf = {
@@ -398,7 +386,7 @@ export default {
             }
         },
         final(id, idx){
-            this.setFinal(id, this.modell[idx]['A'], this.modell[idx]['B']);
+            //this.setFinal(id, this.modell[idx]['A'], this.modell[idx]['B']);
             this.finalizeConfrontacioById({id: id, pA: this.modell[idx]['A'], pB: this.modell[idx]['B']});
         },
         async setFinal(id, pA, pB){
@@ -443,9 +431,9 @@ export default {
         console.log("GET CAMPANYA ACTUAL", this.getCampanyaActual);
         console.log("GET CONFRONTACIO BY TORN", this.getConfrontacionsByTorn);
 
-
-        this.batalles_selectables.push(...getBatallesByJoc(this.getCampanyaActual.joc));
-        this.batalles_noms.push(...getBatallesByJoc(this.getCampanyaActual.joc));
+        console.log("GET BATALLES BY JOC", this.getBatallesByJoc(this.getCampanyaActual.joc));
+        this.batalles_selectables.push(...this.getBatallesByJoc(this.getCampanyaActual.joc));
+        this.batalles_noms.push(...this.getBatallesByJoc(this.getCampanyaActual.joc));
 
         this.group_batalles = {name: 'batalles', pull: (this.getCampanyaActual.is_repetir_misions == "0") ? true : 'clone'};
 

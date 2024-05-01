@@ -125,6 +125,14 @@ export default new Vuex.Store({
         finalizeConfrontacioById({commit}, obj){
             commit('finalizeConfrontacio', obj);
         },
+        setCampanyaActual({commit, state}, campanyaId){
+            let self = this;
+                for (const f of state.campanyes){
+                    if (f.id == campanyaId){
+                        commit('setCampanyaActual', f);
+                    }
+                }
+        },
         async saveUser({commit, state}, nom){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+nom);
             if(posts.data){
@@ -204,6 +212,12 @@ export default new Vuex.Store({
             if (posts.data) {
                 console.log("CALL USERS BY CAMPANYA AJAX", posts.data);
                 commit('populateCampanyaUsers', posts.data);
+
+                for (const f of state.campanyes){
+                    if (f.id == campanyaId){
+                        commit('setCampanyaActual', f);
+                    }
+                }
             }
         },
 

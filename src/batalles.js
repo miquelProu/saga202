@@ -1,4 +1,4 @@
-const batalles = [
+export const batallesFile = [
     {name: "Bienes de valor", id: 0, joc: 'saga'},
     {name: "Reclamar el territorio", id: 1, joc: 'saga'},
     {name: "Festines y saqueos", id: 2, joc: 'saga'},
@@ -16,6 +16,4 @@ const batalles = [
     {name: "Rescate", id: 14, joc: 'clash'},
 ];
 
-export function getBatallesByJoc(joc) {
-    return batalles.filter((x) => x.joc == joc);
-}
+

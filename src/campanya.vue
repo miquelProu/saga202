@@ -162,6 +162,7 @@ export default {
         ...mapActions({
             getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
+            setCampanyaActual: 'setCampanyaActual',
         }),
         calculs(){
             let self = this;
@@ -202,38 +203,40 @@ export default {
         start(){
             let self = this;
             this.getConfrontacionsByCampanyaIdFromDB(this.campanya_id).then(()=>{
-            console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getConfrontacions);
+                console.log("GET CONFRONTACIONS FROM DB TROUGHT THE STORE", self.getConfrontacions);
 
-            console.log("campanya actual", self.getCampanyaActual);
-            console.log("campanya actual confrontacions", self.getConfrontacions);
+                console.log("campanya actual", self.getCampanyaActual);
+                console.log("campanya actual confrontacions", self.getConfrontacions);
 
-            if (self.getConfrontacions.length > 0) {
-                self.grouped_display = Object.groupBy(self.getConfrontacions, ({ torn }) => torn);
-                console.log(this.grouped_display);
+                if (self.getConfrontacions.length > 0) {
+                    self.grouped_display = Object.groupBy(self.getConfrontacions, ({ torn }) => torn);
+                    console.log(this.grouped_display);
 
-                let t = Object.keys(this.grouped_display);
-                //self.mans_usual = self.grouped_display[t[0]].length;
-                //console.log("MAns USUAL", self.mans_usual);
-            } else {
-                self.grouped_display = [];
-            }
-            this.isCalculat = false;
-            this.punts_bando_A = 0;
-            this.punts_bando_B = 0;
-            this.maxs = [];
-            self.calculs();
-        });
+                    let t = Object.keys(this.grouped_display);
+                    //self.mans_usual = self.grouped_display[t[0]].length;
+                    //console.log("MAns USUAL", self.mans_usual);
+                } else {
+                    self.grouped_display = [];
+                }
+                this.isCalculat = false;
+                this.punts_bando_A = 0;
+                this.punts_bando_B = 0;
+                this.maxs = [];
+                self.calculs();
+            });
 
-        this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
-            console.log("GET USUARIS BY CAMPANYA ID FROM DB TROUGHT THE STORE", self.getUsersByCampanyaActual);
-        });
+            this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
+                console.log("GET USUARIS BY CAMPANYA ID FROM DB TROUGHT THE STORE", self.getUsersByCampanyaActual);
+            });
         },
     },
     mounted: function(){
         let self = this;
         console.log("CAMPANYA!!",this.$route);
         this.campanya_id =  this.$route.params.id;
+        //this.setCampanyaActual(this.campanya_id);
         console.log("MEDIA QUERY", this.$mq);
+
 
 
         this.start();
