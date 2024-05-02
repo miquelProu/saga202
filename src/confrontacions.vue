@@ -33,26 +33,39 @@
 
                     <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
                         <div class="column one-three-fifths">
-                            <div class="field" v-if="existControntacio(element.id, idx)">
-                                <p class="control has-text-centered">
+                            <div class="field" v-if="existControntacio(element.id, idx)">{{isDisabled(element.id, idx, 'final')}}
+                                <p v-if="!isDisabled(element.id, 'final')" class="control has-text-centered">
                                     <input
                                         class="input is-small has-text-centered"
                                         type="text"
-                                        placeholder="0"
+                                        placeholder="Final"
                                         v-model="modell[idx]['A']"
-                                        :disabled="isDisabled(element.id, 'final')">
+                                        :disabled="isDisabled(element.id, idx, 'final')">
+                                </p>
+                                <p v-else class="control has-text-centered">
+                                    <input
+                                        class="input is-small has-text-centered"
+                                        type="text"
+                                        placeholder="Puntuacio"
+                                        v-model="modell[idx]['pA']"
+                                        :disabled="isDisabled(element.id, idx, 'final')">
                                 </p>
                             </div>
                         </div>
 
-                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pr-1 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pl-1 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
+                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pr-2 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pl-2 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
 
                         <div class="column one-three-fifths">
                             <div class="field "  v-if="existControntacio(element.id, idx)">
-                                <p class="control has-text-centered">
-                                    <input class="input is-small has-text-centered" type="text" placeholder="0"
+                                <p  v-if="!isDisabled(element.id, 'final')" class="control has-text-centered">
+                                    <input class="input is-small has-text-centered" type="text" placeholder="Puntuacio"
+                                           v-model="modell[idx]['pB']"
+                                           :disabled="isDisabled(element.id, idx, 'final')">
+                                </p>
+                                <p v-else class="control has-text-centered">
+                                    <input class="input is-small has-text-centered" type="text" placeholder="Final"
                                            v-model="modell[idx]['B']"
-                                           :disabled="isDisabled(element.id, 'final')">
+                                           :disabled="isDisabled(element.id, idx, 'final')">
                                 </p>
                             </div>
                         </div>
@@ -68,11 +81,11 @@
                         @end="dragging = false"
                     >
                         <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batalles_selected" :key="element.id">
-                            
+
 
                             <div class="column is-three-fifths is-offset-one-fifth" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
 
-                            
+
                         </div>
                     </draggable>
                 </div>
@@ -306,18 +319,19 @@ export default {
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
             return (!arr.length) ? false : true;
         },
-        isDisabled: function(id, boto){
+        isDisabled: function(id, idx, boto){
             let temp = false;
 
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
-            console.log("IS DISABLED", id);
-            console.log(arr);
             if (boto == 'tancar'){
                 temp = (arr.length) ? false : true;
             } else if(boto == 'final'){
                 temp = (arr.length > 0 && arr[0].isFinal == "0");
             } else if (boto == 'punts'){
                 //temp = (arr.length > 0 && arr[0].isFinal == "0");
+                console.log("IS DISABLED ID", id);
+                console.log("IS DISABLED IDX", idx);
+                console.log(arr);
             }
 
             return temp;
@@ -412,7 +426,7 @@ export default {
         this.modell = []
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
-            self.modell.push({A:f['bandoA']['punts'], B:f['bandoB']['punts']});
+            self.modell.push({A:f['bandoA']['punts'], B:f['bandoB']['punts'], pA:null, pB: null});
         }
     },
 
@@ -443,7 +457,12 @@ export default {
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
             // Creo l'array pels v-models
-            self.modell.push({A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'], B:(f['bandoB']['punts'] == "0") ? null : f['bandoB']['punts']});
+            self.modell.push({
+                A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'],
+                B:(f['bandoB']['punts'] == "0") ? null : f['bandoB']['punts'],
+                pA: null,
+                pB: null
+            });
             // EN tots els casos esborrem dels selectables les batalles escollides
             self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
             if(f.isFinal == "1"){
