@@ -9,6 +9,31 @@
           </div>
 
         <div class="container">
+            <div class="columns acabat is-gapless is-mobile" v-for="(element, idx) in getConfrontacionsByTornAcabades" :key="element.id"">
+                <div class="column is-2-tablet is-2-mobile bandoA">
+                    <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)">
+                        <div>{{ element.bandoA.name }}</div>
+                    </div>
+                </div>
+                <div class="column is-5 missio">
+                    <div class="columns">
+                        <div class="column is-one-fifth has-text-centered">
+                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoA.puntuacio}}</span>
+                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoA.punts}}</span>
+                        </div>
+                        <div class="column is-three-fifths has-text-centered" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ getBatallaNomByIdBatalla(element.id_batalla) }}</div>
+                        <div class="column is-one-fifth has-text-centered">
+                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoB.punts}}</span>
+                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoB.puntuacio}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-2-tablet is-2-mobile bandoA">
+                    <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)" >
+                        <div>{{ element.bandoB.name }}</div>
+                    </div>
+                </div>
+            </div>
             <div class="columns is-gapless is-mobile">
                 <div class="column is-2-tablet is-2-mobile bandoA">
                     <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)" v-for="(element, idx) in bandoAColumn" :key="element.id">
@@ -33,39 +58,35 @@
 
                     <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
                         <div class="column one-three-fifths">
-                            <div class="field" v-if="existControntacio(element.id, idx)">{{isDisabled(element.id, idx, 'final')}}
-                                <p v-if="!isDisabled(element.id, 'final')" class="control has-text-centered">
+                            <div class="field" v-if="existControntacio(element.id, idx)">
+                                <p v-if="showElementBatalla(idx, 'final', 'input-A-pA')" class="control has-text-centered">
                                     <input
                                         class="input is-small has-text-centered"
                                         type="text"
                                         placeholder="Final"
-                                        v-model="modell[idx]['A']"
-                                        :disabled="isDisabled(element.id, idx, 'final')">
+                                        v-model="modell[idx]['A']">
                                 </p>
                                 <p v-else class="control has-text-centered">
                                     <input
                                         class="input is-small has-text-centered"
                                         type="text"
                                         placeholder="Puntuacio"
-                                        v-model="modell[idx]['pA']"
-                                        :disabled="isDisabled(element.id, idx, 'final')">
+                                        v-model="modell[idx]['pA']">
                                 </p>
                             </div>
                         </div>
 
-                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pr-2 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="!isDisabled(element.id, 'final')" class="is-size-7 pl-2 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
+                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="showElementBatalla(idx, 'punts', 'text-A')" class="is-size-7 pr-2 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="showElementBatalla(idx, 'punts', 'text-B')" class="is-size-7 pl-2 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
 
                         <div class="column one-three-fifths">
                             <div class="field "  v-if="existControntacio(element.id, idx)">
-                                <p  v-if="!isDisabled(element.id, 'final')" class="control has-text-centered">
+                                <p  v-if="!showElementBatalla(idx, 'final', 'input-pB-B')" class="control has-text-centered">
                                     <input class="input is-small has-text-centered" type="text" placeholder="Puntuacio"
-                                           v-model="modell[idx]['pB']"
-                                           :disabled="isDisabled(element.id, idx, 'final')">
+                                           v-model="modell[idx]['pB']">
                                 </p>
                                 <p v-else class="control has-text-centered">
                                     <input class="input is-small has-text-centered" type="text" placeholder="Final"
-                                           v-model="modell[idx]['B']"
-                                           :disabled="isDisabled(element.id, idx, 'final')">
+                                           v-model="modell[idx]['B']">
                                 </p>
                             </div>
                         </div>
@@ -88,9 +109,18 @@
 
                         </div>
                     </draggable>
+
+                    <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesFinalsColumns" :key="element.id">
+
+                        <div class="column is-one-fifth">{{element.bandoA.puntuacio}}::{{element.bandoA.punts}}</div>
+                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
+                        <div class="column is-one-fifth">{{element.bandoB.punts}}::{{element.bandoB.puntuacio}}</div>
+                    </div>
+
+
                 </div>
                 <div class="column is-2-tablet is-2-mobile bandoB">
-                    <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
+                    <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}::{{element.id}}</div>
                     <draggable
                         :list="bando_B"
                         group="users"
@@ -111,10 +141,9 @@
                     <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
 
                         <button
-                            v-if = "isDisabled(element.id, 'final')"
+                            v-if = "showBoto(element.id, idx, 'final', 'boto-final')"
                             class="button py-1 mb-0"
                             @click="final(element.id, idx)"
-                            :xdisabled="isDisabled(element.id, 'final')"
                         >
                             <span class="icon">
                               <svg-icon :size="24" type="mdi" :path="finalIcon"></svg-icon>
@@ -123,15 +152,14 @@
                         </button>
 
                         <button
-                            v-else
+                            v-else-if="showBoto(element.id, idx, 'punts', 'boto-puntuacio') && !showBoto(element.id, idx, 'puntuat', 'boto-final')"
                             class="button py-1 mb-0"
-                            @click="final(element.id, idx)"
-                            :xdisabled="isDisabled(element.id, 'punts')"
+                            @click="puntuacio(element.id, idx)"
                         >
                             <span class="icon">
                               <svg-icon :size="24" type="mdi" :path="puntsIcon"></svg-icon>
                             </span>
-                            <span class=" is-hidden-mobile ">Puntuació</span>
+                            <span class=" is-hidden-mobile ">Puntuació {{idx}}</span>
                         </button>
                     </div>
 
@@ -142,7 +170,6 @@
                         <button
                             class="button mb-0"
                             @click="tancar(element, idx)"
-                            :xdisabled="isDisabled(element.id, 'tancar')"
                         >
                             <span class="icon is-small">
                               <svg-icon :size="24" type="mdi" :path="candau"></svg-icon>
@@ -201,40 +228,6 @@ export default {
             bando_A: [],
             bando_B: [],
             batallesOrig: batallesFile,
-            /*batalles_noms:[
-                {name: "Bienes de valor", id: 0, joc: 'saga'},
-                {name: "Reclamar el territorio", id: 1, joc: 'saga'},
-                {name: "Festines y saqueos", id: 2, joc: 'saga'},
-                {name: "Una historia de desafíos", id: 3, joc: 'saga'},
-                {name: "¡Emboscada!", id: 4, joc: 'saga'},
-                {name: "Mantener el botín", id: 5, joc: 'saga'},
-                {name: "Desacratización", id: 6, joc: 'saga'},
-                {name: "Vieja disputa", id: 7, joc: 'saga'},
-                {name: "El cruce", id: 8, joc: 'saga'},
-                {name: "Cambio de planes", id: 9, joc: 'saga'},
-                {name: "¡Esta es mi tierra!", id: 10, joc: 'clash'},
-                {name: "Forrajeo", id: 11, joc: 'clash'},
-                {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
-                {name: "Proyección de fuerza", id: 13, joc: 'clash'},
-                {name: "Rescate", id: 14, joc: 'clash'},
-            ],
-            batalles_selectables:[
-                {name: "Bienes de valor", id: 0, joc: 'saga'},
-                {name: "Reclamar el territorio", id: 1, joc: 'saga'},
-                {name: "Festines y saqueos", id: 2, joc: 'saga'},
-                {name: "Una historia de desafíos", id: 3, joc: 'saga'},
-                {name: "¡Emboscada!", id: 4, joc: 'saga'},
-                {name: "Mantener el botín", id: 5, joc: 'saga'},
-                {name: "Desacratización", id: 6, joc: 'saga'},
-                {name: "Vieja disputa", id: 7, joc: 'saga'},
-                {name: "El cruce", id: 8, joc: 'saga'},
-                {name: "Cambio de planes", id: 9, joc: 'saga'},
-                {name: "¡Esta es mi tierra!", id: 10, joc: 'clash'},
-                {name: "Forrajeo", id: 11, joc: 'clash'},
-                {name: "Exploración previa a la batalla", id: 12, joc: 'clash'},
-                {name: "Proyección de fuerza", id: 13, joc: 'clash'},
-                {name: "Rescate", id: 14, joc: 'clash'},
-            ],*/
             batalles_selectables: [],
             batalles_noms: [],
             batalles_selected:[],
@@ -251,6 +244,7 @@ export default {
             getConfrontacionsByTorn: 'getConfrontacionsByTorn',
             getCampanyaActual: 'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
+            getConfrontacionsByTornAcabades: 'getConfrontacionsByTornAcabades',
         }),
         //Creem llista calenta des de Vuex amb el bando A
         bandoAColumn: function () {
@@ -281,8 +275,22 @@ export default {
             let temp = [];
             for (const f of this.getConfrontacionsByTorn){
                 for (const x of self.batalles_noms){
-                    if (x.id == f.id_batalla){
+                    if (x.id == f.id_batalla && (!('puntuacio' in f.bandoA) || f.bandoA.puntuacio === null)){
                         temp.push(x);
+                    }
+                }
+            }
+            return temp;
+        },
+        batallesFinalsColumns: function(){
+            let self = this;
+            let temp = [];
+            for (const f of this.getConfrontacionsByTorn){
+                for (const x of self.batalles_noms){
+                    if (x.id == f.id_batalla && ('puntuacio' in f.bandoA) && f.bandoA.puntuacio !== null){
+                        let t = f;
+                        t['name'] = x.name
+                        temp.push(t);
                     }
                 }
             }
@@ -295,6 +303,8 @@ export default {
             pushConfrontacio: 'pushConfrontacio',
             getUsersFromDB: 'getUsersFromDB',
             finalizeConfrontacioById: 'finalizeConfrontacioById',
+            puntuaConfrontacioById: 'puntuaConfrontacioById',
+            refreshConfrontacionsByTorn: 'refreshConfrontacionsByTorn',
         }),
         getBatallesByJoc(joc) {
             return this.batallesOrig.filter((x) => x.joc == joc);
@@ -315,11 +325,15 @@ export default {
             return (!arr.length) ? '' : 'selected';
 
         },
+        getBatallaNomByIdBatalla(id){
+            let arr = this.batallesOrig.filter((x) => x['id'] == id);
+            return arr[0].name;
+        },
         existControntacio(id, idx){
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
             return (!arr.length) ? false : true;
         },
-        isDisabled: function(id, idx, boto){
+        showBoto: function(id, idx, boto, origen){
             let temp = false;
 
             let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
@@ -328,12 +342,20 @@ export default {
             } else if(boto == 'final'){
                 temp = (arr.length > 0 && arr[0].isFinal == "0");
             } else if (boto == 'punts'){
-                //temp = (arr.length > 0 && arr[0].isFinal == "0");
-                console.log("IS DISABLED ID", id);
-                console.log("IS DISABLED IDX", idx);
-                console.log(arr);
+                temp = (arr.length > 0 && arr[0].isFinal == "1");
+            } else if (boto == 'puntuat'){
+                temp = (arr.length > 0 && arr[0].isFinal == "1" && ('puntuacio' in arr[0].bandoA) && arr[0].bandoA.puntuacio !== null);
             }
-
+            console.log("ACTIVA BUTONS");
+            console.log(origen, boto);
+            console.log(id, temp);
+            console.log(arr);
+            return temp;
+        },
+        showElementBatalla(idx, boto, origen){
+            //console.log("SHOW ELEMENT BATALLA", idx);
+            //console.log(boto, origen);
+            let temp = this.showBoto(this.botonsColumnGrabat[idx].id, 0, boto, origen);
             return temp;
         },
         checkMove: function(e) {
@@ -410,7 +432,10 @@ export default {
                 console.log("UPDATE FINAL!!", posts.data);
             }
         },
-
+        puntuacio(id, idx){
+            this.puntuaConfrontacioById({id: id, pA:this.modell[idx]['pA'], pB: this.modell[idx]['pB']});
+            this.refreshConfrontacionsByTorn();
+        },
 
         extractRepetits(coleccio, id, nom = "id"){
             coleccio = coleccio.filter(function( obj ) {
@@ -452,7 +477,6 @@ export default {
         this.group_batalles = {name: 'batalles', pull: (this.getCampanyaActual.is_repetir_misions == "0") ? true : 'clone'};
 
         console.log("Creo els models");
-
         let finalCounter = 0;
         this.modell = [];
         for (const f of this.getConfrontacionsByTorn){
@@ -465,18 +489,15 @@ export default {
             });
             // EN tots els casos esborrem dels selectables les batalles escollides
             self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
-            if(f.isFinal == "1"){
-                finalCounter++;
-            }
         }
-        if (finalCounter == this.getUsersByCampanyaActual.length / 2){
-            this.isAllFinal = true;
+        // També extrect de les selectables les batalles finlas
+         for (const f of this.getConfrontacionsByTornAcabades){
+            self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
         }
-
 
 
         // Si no esta el torn ple, afegim els usuaris sense confrontacio
-        if (this.getConfrontacionsByTorn.length !== this.getUsersByCampanyaActual.length / 2){
+        if (this.getConfrontacionsByTorn.length + this.getConfrontacionsByTornAcabades.length !== this.getUsersByCampanyaActual.length / 2){
             console.log("EL TORN NO ÉS PLE");
             let temp = []
 
@@ -489,7 +510,7 @@ export default {
             for (const [idx, f] of arr.entries()){
                 if (this.getCampanyaActual.bandols == "2") {
 
-                    if (f.bando == "0") {
+                    if (f.bando == "0" ) {
                         self.bando_A.push({id: f.id_usuari, name: f.nom});
                     } else {
                         self.bando_B.push({id: f.id_usuari, name: f.nom});

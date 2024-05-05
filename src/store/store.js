@@ -71,8 +71,16 @@ export default new Vuex.Store({
         getCampanyaActual(state){
             return state.campanyaActual;
         },
-        getConfrontacionsByTorn(state){
+        getConfrontacionsByTornOLD(state){
             return state.confrontacions.filter(obj => obj.torn === state.confrontacioTorn);
+        },
+        getConfrontacionsByTorn(state){
+            return state.confrontacions.filter(obj => obj.torn === state.confrontacioTorn && 
+                (!('puntuacio' in obj.bandoA) || obj.bandoA.puntuacio === null));
+        },
+        getConfrontacionsByTornAcabades(state){
+            return state.confrontacions.filter(obj => (obj.torn === state.confrontacioTorn) && ('puntuacio' in obj.bandoA) 
+                && obj.bandoA.puntuacio !== null);
         },
         getUsersByCampanyaActual(state){
             return state.campanyaActualUsers;
@@ -113,9 +121,20 @@ export default new Vuex.Store({
             state.confrontacions[itemIndex]['isFinal'] = "1";
             state.confrontacions[itemIndex]['bandoA']['punts'] = obj.pA;
             state.confrontacions[itemIndex]['bandoB']['punts'] = obj.pB;
-        }
+        },
+        puntuaConfrontacio(state, obj){
+            const itemIndex = state.confrontacions.findIndex(x => x.id == obj.id);
+            state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pA;
+            state.confrontacions[itemIndex]['bandoB']['puntuacio'] = obj.pB;
+        },
+        
     },
     actions:{
+        refreshConfrontacionsByTorn({commit, state}){
+            let old = state.confrontacioTorn;
+            commit('setConfrontacioTorn', 1);
+            commit('setConfrontacioTorn', old);
+        },
         pushConfrontacio({commit}, confrontacio){
             commit('pushConfrontacio', confrontacio);
         },
@@ -124,6 +143,9 @@ export default new Vuex.Store({
         },
         finalizeConfrontacioById({commit}, obj){
             commit('finalizeConfrontacio', obj);
+        },
+        puntuaConfrontacioById({commit}, obj){
+            commit('puntuaConfrontacio', obj);
         },
         setCampanyaActual({commit, state}, campanyaId){
             let self = this;
@@ -169,7 +191,7 @@ export default new Vuex.Store({
         },
         async getConfrontacionsByCampanyaIdFromDB({commit, state}, campanyaId){
             if (state.campanyaActual && campanyaId != state.campanyaActual.id){
-                const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaId.php?id=` + campanyaId)
+                const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaIdv2.php?id=` + campanyaId)
                 if (posts.data) {
                     console.log("CALL AJAX CONFRONTACIONS BY CAMPANAYA ID", posts.data);
                     commit('populateConfrontacions', posts.data.confrontacions);
