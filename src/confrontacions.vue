@@ -9,30 +9,34 @@
           </div>
 
         <div class="container">
-            <div class="columns acabat is-gapless is-mobile" v-for="(element, idx) in getConfrontacionsByTornAcabades" :key="element.id"">
+            <div class="columns acabat is-gapless is-mobile" v-for="(element, idx) in getConfrontacionsByTornAcabades" :key="element.id">
+
                 <div class="column is-2-tablet is-2-mobile bandoA">
-                    <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)">
+                    <div class="tarja nodrag mb-0" :class="isSelected('bandoA', element.id, idx)">
                         <div>{{ element.bandoA.name }}</div>
                     </div>
                 </div>
+
                 <div class="column is-5 missio">
-                    <div class="columns">
-                        <div class="column is-one-fifth has-text-centered">
+                    <div class="columns tarja nodrag">
+                        <div class="column is-one-fifth has-text-centered p-0">
                             <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoA.puntuacio}}</span>
-                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoA.punts}}</span>
+                            <span class="is-size-5 has-text-weight-bold">{{element.bandoA.punts}}</span>
                         </div>
-                        <div class="column is-three-fifths has-text-centered" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ getBatallaNomByIdBatalla(element.id_batalla) }}</div>
-                        <div class="column is-one-fifth has-text-centered">
-                            <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoB.punts}}</span>
+                        <div class="column is-three-fifths has-text-centered p-0" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ getBatallaNomByIdBatalla(element.id_batalla) }}</div>
+                        <div class="column is-one-fifth has-text-centered p-0">
+                            <span class="is-size-5 pr-2 has-text-weight-bold">{{element.bandoB.punts}}</span>
                             <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoB.puntuacio}}</span>
                         </div>
                     </div>
                 </div>
-                <div class="column is-2-tablet is-2-mobile bandoA">
+
+                <div class="column is-2-tablet is-2-mobile bandoB">
                     <div class="tarja nodrag" :class="isSelected('bandoA', element.id, idx)" >
                         <div>{{ element.bandoB.name }}</div>
                     </div>
                 </div>
+
             </div>
             <div class="columns is-gapless is-mobile">
                 <div class="column is-2-tablet is-2-mobile bandoA">
@@ -120,7 +124,7 @@
 
                 </div>
                 <div class="column is-2-tablet is-2-mobile bandoB">
-                    <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}::{{element.id}}</div>
+                    <div class="tarja nodrag" :class="isSelected('bandoB', element.id, idx)" v-for="(element, idx) in bandoBColumn" :key="element.id">{{ element.name }}</div>
                     <draggable
                         :list="bando_B"
                         group="users"
@@ -385,7 +389,7 @@ export default {
             };
             this.setTancar(params, idx);
             // Afegeixo a l'array del v-model
-            this.modell.push({A:0, B:0});
+            this.modell.push({A: null, B: null});
         },
         async setTancar(params, idx){
             // Faig l'insert i espero el nou id per guardar-ho a la store
@@ -534,6 +538,35 @@ export default {
 
 .confrontacio {
 
+    .acabat{
+
+        &.columns.is-gapless {
+            margin-bottom: 0;
+        }
+
+        .bandoA .tarja.nodrag {
+            border-color: dodgerblue;
+            border-right-width: 0;
+            margin-right: 0;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+        .bandoB .tarja.nodrag{
+            border-color: dodgerblue;
+            border-left-width: 0;
+            margin-left: 0;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+        .missio .columns.tarja.nodrag {
+            border: 1px solid dodgerblue;
+            border-right-width: 0;
+            border-left-width: 0;
+            padding-top: 9px;
+            padding-bottom: 9px;
+        }
+    }
+
     .bandoA .tarja {
         text-align: center;
 
@@ -600,11 +633,6 @@ export default {
         background: #c8ebfb;
     }
 
-    /*
-.list-group{
-    padding-top:30px;
-}
-*/
     .misio-seleccio .list-group {
         padding-top: 0;
     }
