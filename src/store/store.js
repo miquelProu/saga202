@@ -131,6 +131,7 @@ export default new Vuex.Store({
     },
     actions:{
         refreshConfrontacionsByTorn({commit, state}){
+            // Kludge que te cagas
             let old = state.confrontacioTorn;
             commit('setConfrontacioTorn', 1);
             commit('setConfrontacioTorn', old);

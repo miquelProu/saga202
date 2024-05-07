@@ -17,8 +17,8 @@
                     </div>
                 </div>
 
-                <div class="column is-5 missio">
-                    <div class="columns tarja nodrag">
+                <div class="column is-5-tablet is-6-mobile missio">
+                    <div class="columns is-mobile tarja nodrag">
                         <div class="column is-one-fifth has-text-centered p-0">
                             <span class="is-size-7 pr-2 has-text-weight-bold">{{element.bandoA.puntuacio}}</span>
                             <span class="is-size-5 has-text-weight-bold">{{element.bandoA.punts}}</span>
@@ -163,7 +163,7 @@
                             <span class="icon">
                               <svg-icon :size="24" type="mdi" :path="puntsIcon"></svg-icon>
                             </span>
-                            <span class=" is-hidden-mobile ">Puntuació {{idx}}</span>
+                            <span class=" is-hidden-mobile ">Puntuació</span>
                         </button>
                     </div>
 
@@ -348,12 +348,12 @@ export default {
             } else if (boto == 'punts'){
                 temp = (arr.length > 0 && arr[0].isFinal == "1");
             } else if (boto == 'puntuat'){
-                temp = (arr.length > 0 && arr[0].isFinal == "1" && ('puntuacio' in arr[0].bandoA) && arr[0].bandoA.puntuacio !== null);
+                temp = (arr.length > 0 && arr[idx].isFinal == "1" && ('puntuacio' in arr[idx].bandoA) && arr[idx].bandoA.puntuacio !== null);
             }
-            console.log("ACTIVA BUTONS");
+            /*console.log("ACTIVA BUTONS");
             console.log(origen, boto);
             console.log(id, temp);
-            console.log(arr);
+            console.log(arr);*/
             return temp;
         },
         showElementBatalla(idx, boto, origen){
@@ -389,7 +389,12 @@ export default {
             };
             this.setTancar(params, idx);
             // Afegeixo a l'array del v-model
-            this.modell.push({A: null, B: null});
+            this.modell.push({
+                A: null,
+                B: null,
+                pA: null,
+                pB: null
+            });
         },
         async setTancar(params, idx){
             // Faig l'insert i espero el nou id per guardar-ho a la store
@@ -438,7 +443,10 @@ export default {
         },
         puntuacio(id, idx){
             this.puntuaConfrontacioById({id: id, pA:this.modell[idx]['pA'], pB: this.modell[idx]['pB']});
-            this.refreshConfrontacionsByTorn();
+            console.log("MODELL", this.modell);
+            this.$delete(this.modell, idx);
+            console.log("MODELL", this.modell);
+            //this.refreshConfrontacionsByTorn();
         },
 
         extractRepetits(coleccio, id, nom = "id"){
@@ -480,10 +488,12 @@ export default {
 
         this.group_batalles = {name: 'batalles', pull: (this.getCampanyaActual.is_repetir_misions == "0") ? true : 'clone'};
 
-        console.log("Creo els models");
+        
         let finalCounter = 0;
         this.modell = [];
+        let countt = 0;
         for (const f of this.getConfrontacionsByTorn){
+            console.log("Creo els models");
             // Creo l'array pels v-models
             self.modell.push({
                 A:(f['bandoA']['punts'] == "0") ? null : f['bandoA']['punts'],
@@ -491,6 +501,8 @@ export default {
                 pA: null,
                 pB: null
             });
+            countt++;
+            console.log("COUNTT:", countt);
             // EN tots els casos esborrem dels selectables les batalles escollides
             self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
         }
