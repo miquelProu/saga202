@@ -60,7 +60,7 @@
                 </div>
                 <div class="column is-5-tablet is-6-mobile misio">
 
-                    <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.id">
+                    <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.idid">
                         <div class="column one-three-fifths">
                             <div class="field" v-if="existControntacio(element.id, idx)">
                                 <p v-if="showElementBatalla(idx, 'final', 'input-A-pA')" class="control has-text-centered">
@@ -363,16 +363,18 @@ export default {
             return temp;
         },
         checkMove: function(e) {
-            //console.log("Future index: " + e);
-            //console.log(e, Object.keys(e)[0]);
-            /*if (Object.keys(e)[0] === "added") {
+            console.log("Future index: " + e);
+            console.log(e, Object.keys(e)[0]);
+            console.log(this.batalles_selected.length);
+            if (Object.keys(e)[0] === "added") {
                 console.log("ADDED", e.added.element.id);
-                console.log("IS REPETIR MISSIO", this.getCampanyaActual.is_repetir_misions);
-                if (this.getCampanyaActual.is_repetir_misions == "0") {
+                console.log(e.added.element.id + this.batalles_selected.length * 10);
+                e.added.element['idid'] = e.added.element.id + this.batalles_selected.length * 10;
+             /*   if (this.getCampanyaActual.is_repetir_misions == "0") {
                     console.log("ENTER extractRepetits");
                     this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
-                }
-            }*/
+                }*/
+            }
         },
         tancar: function(id, idx) {
             console.log("TANCAR", idx);
@@ -446,7 +448,7 @@ export default {
             console.log("MODELL", this.modell);
             this.$delete(this.modell, idx);
             console.log("MODELL", this.modell);
-            //this.refreshConfrontacionsByTorn();
+            this.refreshConfrontacionsByTorn();
         },
 
         extractRepetits(coleccio, id, nom = "id"){
@@ -488,7 +490,7 @@ export default {
 
         this.group_batalles = {name: 'batalles', pull: (this.getCampanyaActual.is_repetir_misions == "0") ? true : 'clone'};
 
-        
+
         let finalCounter = 0;
         this.modell = [];
         let countt = 0;
