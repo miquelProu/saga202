@@ -60,7 +60,7 @@
                 </div>
                 <div class="column is-5-tablet is-6-mobile misio">
 
-                    <div class="tarja columns is-gapless  is-mobile nodrag"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesColumn" :key="element.idid">
+                    <div class="tarja columns is-gapless  is-mobile nodrag selected"  v-for="(element,idx) in batallesColumn" :key="element.idid">
                         <div class="column one-three-fifths">
                             <div class="field" v-if="existControntacio(element.id, idx)">
                                 <p v-if="showElementBatalla(idx, 'final', 'input-A-pA')" class="control has-text-centered">
@@ -105,7 +105,7 @@
                         @start="dragging = true"
                         @end="dragging = false"
                     >
-                        <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batalles_selected" :key="element.id">
+                        <div class="tarja columns is-gapless  is-mobile" v-for="(element,idx) in batalles_selected" :key="idx">
 
 
                             <div class="column is-three-fifths is-offset-one-fifth" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
@@ -326,6 +326,9 @@ export default {
             } else {
                 arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
             }
+            /*console.log("IS SELECTED", banda);
+            console.log(id, idx);
+            console.log(arr);*/
             return (!arr.length) ? '' : 'selected';
 
         },
@@ -363,18 +366,18 @@ export default {
             return temp;
         },
         checkMove: function(e) {
-            console.log("Future index: " + e);
+         /*   console.log("Future index: " + e);
             console.log(e, Object.keys(e)[0]);
             console.log(this.batalles_selected.length);
             if (Object.keys(e)[0] === "added") {
                 console.log("ADDED", e.added.element.id);
                 console.log(e.added.element.id + this.batalles_selected.length * 10);
                 e.added.element['idid'] = e.added.element.id + this.batalles_selected.length * 10;
-             /*   if (this.getCampanyaActual.is_repetir_misions == "0") {
+                if (this.getCampanyaActual.is_repetir_misions == "0") {
                     console.log("ENTER extractRepetits");
                     this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
-                }*/
-            }
+                }
+            }*/
         },
         tancar: function(id, idx) {
             console.log("TANCAR", idx);
@@ -445,10 +448,11 @@ export default {
         },
         puntuacio(id, idx){
             this.puntuaConfrontacioById({id: id, pA:this.modell[idx]['pA'], pB: this.modell[idx]['pB']});
+            this.refreshConfrontacionsByTorn();
             console.log("MODELL", this.modell);
             this.$delete(this.modell, idx);
             console.log("MODELL", this.modell);
-            this.refreshConfrontacionsByTorn();
+            
         },
 
         extractRepetits(coleccio, id, nom = "id"){
@@ -505,8 +509,10 @@ export default {
             });
             countt++;
             console.log("COUNTT:", countt);
-            // EN tots els casos esborrem dels selectables les batalles escollides
-            self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
+            // Sí no es pot repetir batalla esborrem dels selectables les batalles escollides
+            if (this.getCampanyaActual.is_repetir_misions == "0"){
+                self.batalles_selectables = self.extractRepetits(self.batalles_selectables, f.id_batalla);
+            }
         }
         // També extrect de les selectables les batalles finlas
          for (const f of this.getConfrontacionsByTornAcabades){
