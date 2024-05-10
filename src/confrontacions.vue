@@ -508,6 +508,10 @@ export default {
                 arr = arr.filter((x) => f.bandoA.id != x.id_usuari);
                 arr = arr.filter((x) => f.bandoB.id != x.id_usuari);
             }
+            for (const f of this.getConfrontacionsByTornAcabades){
+                arr = arr.filter((x) => f.bandoA.id != x.id_usuari);
+                arr = arr.filter((x) => f.bandoB.id != x.id_usuari);
+            }
             console.log("ARR", arr);
             for (const [idx, f] of arr.entries()){
                 if (this.getCampanyaActual.bandols == "2") {

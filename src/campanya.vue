@@ -2,6 +2,8 @@
     <section class="campanya">
         <div class="container " style="margin-bottom:40px;">
             <div class="cinzel-regular title is-size-4 has-text-centered"><span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
+        </div>
+        <div class="container" v-if="lliga.length > 0 && (getCampanyaActual.bandols * 1) > 1">
             <div class="cinzel-regular title is-size-4 has-text-centered">Puntuació</div>
             <div class="columns cinzel-regular is-mobile  is-hidden-tablet">
                 <div class="column is-6 ">
@@ -65,6 +67,40 @@
                 </div>
               </div>
             </nav>
+        </div>
+
+        <div class="container" v-if="lliga.length > 0">
+            <div class="columns">
+                <div class="column is-half is-offset-one-quarter">
+                    <div class="cinzel-regular title is-size-4 has-text-centered">Lliga</div>
+                    <table class="table is-striped lliga is-fullwidth">
+                        <thead>
+                            <tr class="cinzel-regular">
+                                <td>Nom</td>
+                                <td v-if="(getCampanyaActual.bandols * 1) > 1" class="has-text-centered">Bandol</td>
+                                <td class="has-text-centered">Punts</td>
+                                <td>T</td>
+                                <td>G</td>
+                                <td>P</td>
+                                <td>E</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="e in sortedByPuntuacio">
+                                <td class="cinzel-regular">{{e.nom}}</td>
+                                <td v-if="(getCampanyaActual.bandols * 1) > 1" class="cinzel-regular has-text-centered has-text-weight-bold">{{ (e.bandol == "bandoA") ? 'A' : 'B'}}</td>
+                                <td class="has-text-centered irrpb has-text-weight-bold">{{e.puntuacio}}</td>
+                                <td>{{e.guanyat + e.perdut + e.empat}}</td>
+                                <td>{{e.guanyat}}</td>
+                                <td>{{e.perdut}}</td>
+                                <td>{{e.empat}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-6">
             <div class="content has-text-centered"><button class="button is-primary is-outlined is-medium noutorn"><router-link active-class="link-torn" :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: Object.keys(grouped_display).length + 1}}">Nou torn</router-link></button></div>
         </div>
         <div class="container confrontacions">
@@ -73,17 +109,19 @@
                     <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
-                                <td colspan="5" class="has-text-centered">
+                                <td colspan="7" class="has-text-centered">
                                 <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="e in grouped_display[element]">
+                            <tr v-for="e in grouped_display[element]" :class="e.bandoA.puntuacio == null ? 'has-background-warning' : ''">
                                 <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
+                                <td v-if="e.isFinal == 1">{{e.bandoA.puntuacio}} </td>
                                 <td v-if="e.isFinal == 1">{{e.bandoA.punts}} </td>
                                 <td v-if="e.isFinal == 1" class="has-text-centered">{{batalles[e.id_batalla].name}}</td>
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}</td>
+                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.puntuacio}} </td>
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.name}}</td>
                             </tr>
                         </tbody>
@@ -140,6 +178,7 @@ export default {
             nRondes: null,
             punts:[],
             mans_usual: 0,
+            lliga: []
         }
     },
     watch: {
@@ -157,6 +196,12 @@ export default {
             getCampanyaActual:'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
         }),
+        sortedByPunts() {
+          return this.lliga.sort((a, b) => { return b.punts - a.punts;});
+        },
+        sortedByPuntuacio() {
+          return this.lliga.sort((a, b) => { return b.puntuacio - a.puntuacio || b.guanyat - a.guanyat || b.perdut + b.perdut;});
+        },
     },
     methods: {
         ...mapActions({
@@ -164,11 +209,11 @@ export default {
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
             setCampanyaActual: 'setCampanyaActual',
         }),
-        calculs(){
+        calculsByBando(){
             let self = this;
             for (const f of this.getConfrontacions){
-                self.punts_bando_A = self.punts_bando_A + parseInt(f.bandoA.punts);
-                self.punts_bando_B = self.punts_bando_B + parseInt(f.bandoB.punts);
+                self.punts_bando_A = self.punts_bando_A + parseInt(f.bandoA.puntuacio);
+                self.punts_bando_B = self.punts_bando_B + parseInt(f.bandoB.puntuacio);
             }
 
             this.maxs = [];
@@ -181,6 +226,55 @@ export default {
 
 
         },
+        rebuildJugador(obj, bando, bandoContrari){
+            let t = {};
+            t['name'] = obj[bando]['name'];
+            t['punts'] = obj[bando]['punts'];
+            t['puntuacio'] = obj[bando]['puntuacio'];
+            t['guanyat'] = (obj[bando]['puntuacio'] > obj[bandoContrari]['puntuacio']) ? 1 : 0;
+            t['perdut'] = (obj[bando]['puntuacio'] < obj[bandoContrari]['puntuacio']) ? 1 : 0;
+            t['empat'] = (obj[bando]['puntuacio'] == obj[bandoContrari]['puntuacio']) ? 1 : 0;
+            t['bandol'] = bando;
+            return t;
+        },
+        flatBandols(){
+            let self = this;
+            let temp = [];
+            for (let f of this.getConfrontacions){
+                if (f.bandoA.puntuacio !== null){
+                    let t = self.rebuildJugador(f, 'bandoA', 'bandoB');
+                    temp.push(t);
+                    let m = self.rebuildJugador(f, 'bandoB', 'bandoA');
+                    temp.push(m);
+                }
+            }
+            return temp;
+        },
+        calculsByLliga(){
+            let self = this;
+            const bandolsFlated = this.flatBandols();
+            const byUser = Object.groupBy(bandolsFlated, ({name}) => name);
+            //console.log("RESULT LLIGA", byUser);
+
+            for (const f of Object.keys(byUser)){
+                let punts = 0;
+                let puntuacio = 0;
+                let guanyat = 0;
+                let empat = 0;
+                let perdut = 0;
+                let bandol = '';
+                for (const ff of byUser[f]){
+                    punts = punts + (ff.punts * 1);
+                    puntuacio = puntuacio + (ff.puntuacio * 1);
+                    guanyat = guanyat + ff.guanyat;
+                    empat = empat + ff.empat;
+                    perdut = perdut + ff.perdut;
+                    bandol = ff.bandol;
+                }
+                self.lliga.push({nom: f, punts: punts, puntuacio: puntuacio, guanyat: guanyat, empat: empat, perdut: perdut, bandol: bandol});
+            }
+            //console.log("LLIGA FINAL", this.lliga);
+        },
         calculBando(byUser, bando){
             let jugador_bando_A = '';
             let max_bando_A = 0;
@@ -189,7 +283,7 @@ export default {
                 //console.log(f, byUser[f]);
                 let temp = 0;
                 for (const ff of byUser[f]){
-                    temp = temp + (ff[bando]['punts'] * 1);
+                    temp = temp + (ff[bando]['puntuacio'] * 1);
                 }
                 console.log(f,temp);
                 if (temp > max_bando_A){
@@ -222,7 +316,8 @@ export default {
                 this.punts_bando_A = 0;
                 this.punts_bando_B = 0;
                 this.maxs = [];
-                self.calculs();
+                self.calculsByBando();
+                self.calculsByLliga();
             });
 
             this.getUsuarisByCampanyaIdFromDB(this.campanya_id).then(()=>{
@@ -267,6 +362,12 @@ export default {
             color: #f1592a;
             font-weight: bold;;
 
+        }
+    }
+
+    table.lliga{
+        .irrpb {
+            color: $irrpb;
         }
     }
 
