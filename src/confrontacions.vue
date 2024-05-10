@@ -380,9 +380,9 @@ export default {
             }
             console.log(text);
 
-            //const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
-            let random = Math.floor(Math.random() * 50) + 1;
-            const posts = {data: random};
+            const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
+            //let random = Math.floor(Math.random() * 50) + 1;
+            //const posts = {data: random};
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
                 let conf = {
@@ -408,7 +408,7 @@ export default {
             }
         },
         final(id, idx){
-            //this.setFinal(id, this.modell[idx]['A'], this.modell[idx]['B']);
+            this.setFinal(id, this.modell[idx]['A'], this.modell[idx]['B']);
             this.finalizeConfrontacioById({id: id, pA: this.modell[idx]['A'], pB: this.modell[idx]['B']});
         },
         async setFinal(id, pA, pB){
@@ -420,12 +420,11 @@ export default {
         },
         puntuacio(id, idx){
             this.puntuaConfrontacioById({id: id, pA:this.modell[idx]['pA'], pB: this.modell[idx]['pB']});
+            this.setPuntuat(id, this.modell[idx]['pA'], this.modell[idx]['pB']);
             this.refreshConfrontacionsByTorn();
             console.log("MODELL", this.modell);
             this.$delete(this.modell, idx);
             console.log("MODELL", this.modell);
-            //this.setPuntuat(id, this.modell[idx]['pA'], this.modell[idx]['pB']);
-            
         },
         async setPuntuat(id, pA, pB){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/updateConfrontacioPuntuacio.php?id='+id+'&pA='+pA+'&pB='+pB);
