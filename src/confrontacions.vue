@@ -62,8 +62,10 @@
 
                     <div class="tarja columns is-gapless  is-mobile nodrag selected"  v-for="(element,idx) in batallesColumn" :key="element.idid">
                         <div class="column one-three-fifths">
-                            <div class="field" v-if="existControntacio(element.id, idx)">
-                                <p v-if="showElementBatalla(idx, 'final', 'input-A-pA')" class="control has-text-centered">
+                            <div class="field">
+                                <p  v-if="element.isFinal == '0'" 
+                                    class="control has-text-centered"
+                                >
                                     <input
                                         class="input is-small has-text-centered"
                                         type="text"
@@ -80,11 +82,14 @@
                             </div>
                         </div>
 
-                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name"><span v-if="showElementBatalla(idx, 'punts', 'text-A')" class="is-size-7 pr-2 has-text-weight-bold">{{modell[idx]['A']}}</span>{{ element.name }}<span v-if="showElementBatalla(idx, 'punts', 'text-B')" class="is-size-7 pl-2 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
+                        <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">
+                            <span v-if="element.isFinal != '0'" class="is-size-7 pr-2 has-text-weight-bold">{{modell[idx]['A']}}</span>
+                            <span>{{ element.name }}</span>
+                            <span v-if="element.isFinal != '0'" class="is-size-7 pl-2 has-text-weight-bold">{{modell[idx]['B']}}</span></div>
 
                         <div class="column one-three-fifths">
-                            <div class="field "  v-if="existControntacio(element.id, idx)">
-                                <p  v-if="!showElementBatalla(idx, 'final', 'input-pB-B')" class="control has-text-centered">
+                            <div class="field">
+                                <p  v-if="element.isFinal != '0'" class="control has-text-centered">
                                     <input class="input is-small has-text-centered" type="text" placeholder="Puntuacio"
                                            v-model="modell[idx]['pB']">
                                 </p>
@@ -114,12 +119,12 @@
                         </div>
                     </draggable>
 
-                    <div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesFinalsColumns" :key="element.id">
+                    <!--div class="tarja columns is-gapless  is-mobile"  :class="isSelected('batalla', element.id, idx)" v-for="(element,idx) in batallesFinalsColumns" :key="element.id">
 
                         <div class="column is-one-fifth">{{element.bandoA.puntuacio}}::{{element.bandoA.punts}}</div>
                         <div class="column is-three-fifths" style="white-space: nowrap;text-overflow: ellipsis;overflow: hidden;" :title="element.name">{{ element.name }}</div>
                         <div class="column is-one-fifth">{{element.bandoB.punts}}::{{element.bandoB.puntuacio}}</div>
-                    </div>
+                    </div-->
 
 
                 </div>
@@ -142,10 +147,10 @@
                 <div class="column is-3-tablet is-2-mobile botons" xstyle="margin-top:30px;">
 
 
-                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in botonsColumnGrabat" :key="idx + 1000">
+                    <div class="xboto buttons" :class="{'are-small': $mq == 'mobile'}" v-for="(element,idx) in getConfrontacionsByTorn" :key="idx + 1000">
 
                         <button
-                            v-if = "showBoto(element.id, idx, 'final', 'boto-final')"
+                            v-if="element.isFinal == '0' "
                             class="button py-1 mb-0"
                             @click="final(element.id, idx)"
                         >
@@ -156,7 +161,7 @@
                         </button>
 
                         <button
-                            v-else-if="showBoto(element.id, idx, 'punts', 'boto-puntuacio') && !showBoto(element.id, idx, 'puntuat', 'boto-final')"
+                            v-else
                             class="button py-1 mb-0"
                             @click="puntuacio(element.id, idx)"
                         >
@@ -280,7 +285,9 @@ export default {
             for (const f of this.getConfrontacionsByTorn){
                 for (const x of self.batalles_noms){
                     if (x.id == f.id_batalla && (!('puntuacio' in f.bandoA) || f.bandoA.puntuacio === null)){
-                        temp.push(x);
+                        let t = f;
+                        t['name'] = x.name
+                        temp.push(t);
                     }
                 }
             }
@@ -336,48 +343,11 @@ export default {
             let arr = this.batallesOrig.filter((x) => x['id'] == id);
             return arr[0].name;
         },
-        existControntacio(id, idx){
-            let arr = this.getConfrontacionsByTorn.filter((x) => x['id_batalla'] == id);
-            return (!arr.length) ? false : true;
-        },
-        showBoto: function(id, idx, boto, origen){
-            let temp = false;
-
-            let arr = this.getConfrontacionsByTorn.filter((x) => x['id'] == id);
-            if (boto == 'tancar'){
-                temp = (arr.length) ? false : true;
-            } else if(boto == 'final'){
-                temp = (arr.length > 0 && arr[0].isFinal == "0");
-            } else if (boto == 'punts'){
-                temp = (arr.length > 0 && arr[0].isFinal == "1");
-            } else if (boto == 'puntuat'){
-                temp = (arr.length > 0 && arr[idx].isFinal == "1" && ('puntuacio' in arr[idx].bandoA) && arr[idx].bandoA.puntuacio !== null);
-            }
-            /*console.log("ACTIVA BUTONS");
-            console.log(origen, boto);
-            console.log(id, temp);
-            console.log(arr);*/
-            return temp;
-        },
-        showElementBatalla(idx, boto, origen){
-            //console.log("SHOW ELEMENT BATALLA", idx);
-            //console.log(boto, origen);
-            let temp = this.showBoto(this.botonsColumnGrabat[idx].id, 0, boto, origen);
-            return temp;
-        },
         checkMove: function(e) {
          /*   console.log("Future index: " + e);
             console.log(e, Object.keys(e)[0]);
             console.log(this.batalles_selected.length);
-            if (Object.keys(e)[0] === "added") {
-                console.log("ADDED", e.added.element.id);
-                console.log(e.added.element.id + this.batalles_selected.length * 10);
-                e.added.element['idid'] = e.added.element.id + this.batalles_selected.length * 10;
-                if (this.getCampanyaActual.is_repetir_misions == "0") {
-                    console.log("ENTER extractRepetits");
-                    this.batalles_selectables = this.extractRepetits(this.batalles_selectables, e.added.element.id)
-                }
-            }*/
+            */
         },
         tancar: function(id, idx) {
             console.log("TANCAR", idx);
@@ -409,8 +379,10 @@ export default {
                 text = text + '&' + f + '=' + params[f];
             }
             console.log(text);
+
             //const posts = await axios.get(`https://historic.irregularesplanb.com/php/setControntacio.php`+text);
-            const posts = {data: 103+idx+''};
+            let random = Math.floor(Math.random() * 50) + 1;
+            const posts = {data: random};
             if (posts.data) {
                 console.log("TANCAT I GUARDAT", posts.data);
                 let conf = {
@@ -452,9 +424,16 @@ export default {
             console.log("MODELL", this.modell);
             this.$delete(this.modell, idx);
             console.log("MODELL", this.modell);
+            //this.setPuntuat(id, this.modell[idx]['pA'], this.modell[idx]['pB']);
             
         },
-
+        async setPuntuat(id, pA, pB){
+            const posts = await axios.get('https://historic.irregularesplanb.com/php/updateConfrontacioPuntuacio.php?id='+id+'&pA='+pA+'&pB='+pB);
+            //const posts = {data: "12"};
+            if (posts.data) {
+                console.log("UPDATE PUNTUAT!!", posts.data);
+            }
+        },
         extractRepetits(coleccio, id, nom = "id"){
             coleccio = coleccio.filter(function( obj ) {
                 //console.log(obj[nom], id);
