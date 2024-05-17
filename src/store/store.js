@@ -57,6 +57,7 @@ export default new Vuex.Store({
         confrontacions: [],
         confrontacioTorn: 0,
         campanyaActualUsers: [],
+        userKind: null, // super or normal
     },
     getters: {
         getUsers(state){
@@ -85,8 +86,25 @@ export default new Vuex.Store({
         getUsersByCampanyaActual(state){
             return state.campanyaActualUsers;
         },
+        isEditor(state){
+            return (state.userKind == 'super')
+        },
+        isLogged(state){
+            return (state.userKind !== null);
+        },
     },
     mutations:{
+        tryLogin(state, password){
+            if (password == 'oriol') {
+                state.userKind = 'super';
+            }
+            else if (password == 'anibal'){
+                state.userKind = 'normal';
+            }
+        },
+        logOut(state){
+            state.userKind = null;
+        },
         populateUSers(state, users){
             state.users = users;
         },

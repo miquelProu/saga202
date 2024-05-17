@@ -1,19 +1,19 @@
 <template>
   <div>
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a class="navbar-item" href="https://www.irregularesplanb.com/">
       <img src="~@/assets/logo_peque2.png" width="32" height="32">
     </a>
 
-    <a role="button" class="navbar-burger burger" :class="{'is-active': burger}" @click="toggleBurger()" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+    <a v-if="isLogged" role="button" class="navbar-burger burger" :class="{'is-active': burger}" @click="toggleBurger()" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
       <span aria-hidden="true"></span>
     </a>
   </div>
 
-  <div class="navbar-menu" :class="{'is-active': burger}">
+  <div v-if="isLogged" class="navbar-menu" :class="{'is-active': burger}">
     <div class="navbar-start">
       <a class="navbar-item" @click="closeBurger()">
         <router-link class="nav-link is-primary" active-class="a" to="/">Home</router-link>
@@ -56,18 +56,15 @@
       </div-->
     </div>
 
-    <!--div class="navbar-end">
+    <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <a class="button is-primary">
-            <strong>Sign up</strong>
-          </a>
-          <a class="button is-light">
-            Log in
+          <a class="button is-primary" @click="logOut()">
+            <strong>Log Out</strong>
           </a>
         </div>
       </div>
-    </div-->
+    </div>
   </div>
 </nav>
     <router-view/>
@@ -76,7 +73,7 @@
 
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
 
 
   export default {
@@ -92,12 +89,16 @@ import { mapGetters, mapActions } from 'vuex'
     },
     computed: {
         ...mapGetters({
-            getCampanyes: 'getCampanyes'
+            getCampanyes: 'getCampanyes',
+            isLogged: 'isLogged',
         }),
     },
     methods: {
         ...mapActions({
             getCampanyesFromDB: 'getCampanyesFromDB'
+        }),
+        ...mapMutations({
+          logOutStore: 'logOut'
         }),
         toggleBurger(){
           this.burger = !this.burger;
@@ -108,13 +109,19 @@ import { mapGetters, mapActions } from 'vuex'
         campanya(){
           this.hover = !this.hover;
           this.closeBurger();
-        }
+        },
+        logOut(){
+          this.logOutStore();
+          this.$router.push("/login");
+        },
     },
     mounted: function(){
+      if (this.isLogged){
         this.getCampanyesFromDB().then(() => {
             console.log("GET CAMPANYES FROM DB TROUGHT THE STORE");
             console.log(this.getCampanyes);
         });
+      }
     }
   };
 
