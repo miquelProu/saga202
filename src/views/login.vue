@@ -7,7 +7,7 @@
         <div class="field">
           <label class="label">Password</label>
           <div class="control">
-            <input class="input" type="password" v-model="password" placeholder="mmmmhhhh....">
+            <input class="input" type="password" v-model="password" placeholder="mmmmhhhh...." @keyup.enter="submit()">
           </div>
         </div>
         <div class="control">
@@ -29,6 +29,7 @@
 
 <script>
 import { mapGetters, mapMutations } from 'vuex'
+import Md5 from 'js-md5'
 
 export default {
   name: "Login",
@@ -59,6 +60,9 @@ export default {
       }
     },
   },
+  mounted: function(){
+    console.log("LOGIN");
+  }
 };
 </script>
 

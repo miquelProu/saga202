@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 
 import axios from 'axios'
+import Md5 from 'js-md5'
+import createPersistedState from "vuex-persistedstate";
 
 Vue.use(Vuex);
 Vue.config.devtools = true;
@@ -95,10 +97,10 @@ export default new Vuex.Store({
     },
     mutations:{
         tryLogin(state, password){
-            if (password == 'oriol') {
+            if (Md5(password) == 'a6e514f9486b83cb53d8d932f9a04292') {  //napoleon
                 state.userKind = 'super';
             }
-            else if (password == 'anibal'){
+            else if (Md5(password) == '3dc612b769e82d3e4e70ecf4b3343128'){  //anibal
                 state.userKind = 'normal';
             }
         },
@@ -262,5 +264,7 @@ export default new Vuex.Store({
             }
         },
 
-    }
+    },
+    plugins: [createPersistedState()],
+
 });

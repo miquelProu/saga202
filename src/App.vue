@@ -64,6 +64,13 @@
           </a>
         </div>
       </div>
+      <div class="navbar-item">
+        <div class="buttons">
+          <a class="button is-primary" @click="clearStorage()">
+            <strong>Clear</strong>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -114,14 +121,25 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
           this.logOutStore();
           this.$router.push("/login");
         },
-    },
-    mounted: function(){
-      if (this.isLogged){
+        clearStorage(){
+          this.logOutStore();
+          window.localStorage.removeItem('vuex');
+          this.$router.push("/login");
+        },
+        start(){
+          //if (this.isLogged){
         this.getCampanyesFromDB().then(() => {
             console.log("GET CAMPANYES FROM DB TROUGHT THE STORE");
             console.log(this.getCampanyes);
         });
-      }
+      //}
+        },
+    },
+    created: function(){
+      //this.start();
+    },
+    mounted: function(){
+      this.start();
     }
   };
 
