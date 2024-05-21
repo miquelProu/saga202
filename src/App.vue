@@ -26,10 +26,10 @@
                 </div>
             </div>
         </a>
-      <a class="navbar-item" @click="closeBurger()">
+      <a v-if="isEditor" class="navbar-item" @click="closeBurger()">
         <router-link to="/defineixCampanya">Defineix Campanya</router-link>
       </a>
-      <a class="navbar-item" @click="closeBurger()">
+      <a v-if="isEditor" class="navbar-item" @click="closeBurger()">
         <router-link to="/afegeix">Gestionar Generals</router-link>
       </a>
 
@@ -66,7 +66,7 @@
       </div>
       <div class="navbar-item">
         <div class="buttons">
-          <a class="button is-primary" @click="clearStorage()">
+          <a class="button is-danger" @click="clearStorage()">
             <strong>Clear</strong>
           </a>
         </div>
@@ -98,6 +98,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
         ...mapGetters({
             getCampanyes: 'getCampanyes',
             isLogged: 'isLogged',
+            isEditor: 'isEditor',
         }),
     },
     methods: {

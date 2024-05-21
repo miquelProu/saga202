@@ -60,7 +60,7 @@
                 </div>
                 <div class="column is-5-tablet is-6-mobile misio">
 
-                    <div class="tarja columns is-gapless  is-mobile nodrag selected"  v-for="(element,idx) in batallesColumn" :key="element.idid">
+                    <div class="tarja columns is-gapless is-mobile nodrag selected"  :class="{ 'noisEditor': !isEditor }" v-for="(element,idx) in batallesColumn" :key="element.idid">
                         <div class="column one-three-fifths">
                             <div class="field">
                                 <p  v-if="element.isFinal == '0'" 
@@ -72,7 +72,7 @@
                                         placeholder="Final"
                                         v-model="modell[idx]['A']">
                                 </p>
-                                <p v-else class="control has-text-centered">
+                                <p v-else-if="isEditor" class="control has-text-centered">
                                     <input
                                         class="input is-small has-text-centered"
                                         type="text"
@@ -89,11 +89,11 @@
 
                         <div class="column one-three-fifths">
                             <div class="field">
-                                <p  v-if="element.isFinal != '0'" class="control has-text-centered">
+                                <p  v-if="element.isFinal != '0' && isEditor" class="control has-text-centered">
                                     <input class="input is-small has-text-centered" type="text" placeholder="Puntuacio"
                                            v-model="modell[idx]['pB']">
                                 </p>
-                                <p v-else class="control has-text-centered">
+                                <p v-if="element.isFinal == '0'" class="control has-text-centered">
                                     <input class="input is-small has-text-centered" type="text" placeholder="Final"
                                            v-model="modell[idx]['B']">
                                 </p>
@@ -161,7 +161,7 @@
                         </button>
 
                         <button
-                            v-else
+                            v-else-if="isEditor"
                             class="button py-1 mb-0"
                             @click="puntuacio(element.id, idx)"
                         >
@@ -254,6 +254,7 @@ export default {
             getCampanyaActual: 'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
             getConfrontacionsByTornAcabades: 'getConfrontacionsByTornAcabades',
+            isEditor: 'isEditor',
         }),
         //Creem llista calenta des de Vuex amb el bando A
         bandoAColumn: function () {
@@ -600,6 +601,11 @@ export default {
             border-left-width: 0;
             padding-top: 7px;
             padding-bottom: 7px;
+
+            &.noisEditor {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
         }
 
         &.columns.is-gapless {
