@@ -109,7 +109,7 @@
                     <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
-                                <td colspan="7" class="has-text-centered">
+                                <td colspan="8" class="has-text-centered">
                                 <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
@@ -117,7 +117,11 @@
                         <tbody>
                             <tr v-for="e in grouped_display[element]" :class="e.bandoA.puntuacio == null ? 'has-background-warning' : ''">
                                 <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
-                                <td v-if="e.isFinal == 1">{{e.bandoA.puntuacio}} </td>
+                                <td v-if="e.isFinal == 1">{{e.bandoA.puntuacio}}
+                                    <span class="icon is-small" @click="openModal()">
+                                        <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
+                                    </span>
+                                </td>
                                 <td v-if="e.isFinal == 1">{{e.bandoA.punts}} </td>
                                 <td v-if="e.isFinal == 1" class="has-text-centered">{{batalles[e.id_batalla].name}}</td>
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}</td>
@@ -134,6 +138,10 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import SvgIcon from '@jamescoyle/vue-icon'
+import { mdiPencil } from '@mdi/js'
+
+
 
 /**
  * TODO: Mirar si el getUsuarisByCampanyaIdFromDB del final de la carrega servei per algo
@@ -144,11 +152,13 @@ import { mapGetters, mapActions } from 'vuex'
 export default {
     name: 'campanya',
     components: {
+        SvgIcon,
     },
     data: function(){
         return{
             torns: null,
-
+            editIcon: mdiPencil,
+            isModal: false,
             grouped_display: [],
             isCalculat: false,
             punts_bando_A: 0,
