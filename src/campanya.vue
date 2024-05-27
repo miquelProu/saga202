@@ -117,8 +117,10 @@
                         <tbody>
                             <tr v-for="e in grouped_display[element]" :class="e.bandoA.puntuacio == null ? 'has-background-warning' : ''">
                                 <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
-                                <td v-if="e.isFinal == 1">{{e.bandoA.puntuacio}}
-                                    <popper :ref="e.id"
+                                <td v-if="e.isFinal == 1" style="white-space:nowrap;">{{e.bandoA.puntuacio}}
+                                    <popper 
+                                        v-if = "isEditor"
+                                        :ref="e.id+'pA'"
                                         trigger="clickToOpen"
                                         :options="{
                                           placement: 'top',
@@ -138,8 +140,10 @@
                                         </span>
                                     </popper>
                                 </td>
-                                <td v-if="e.isFinal == 1">{{e.bandoA.punts}}
+                                <td v-if="e.isFinal == 1" style="white-space:nowrap;">{{e.bandoA.punts}}
                                     <popper
+                                         v-if = "isEditor"
+                                        :ref="e.id+'A'"
                                         trigger="clickToOpen"
                                         :options="{
                                           placement: 'top',
@@ -160,8 +164,10 @@
                                     </popper>
                                 </td>
                                 <td v-if="e.isFinal == 1" class="has-text-centered">{{batalles[e.id_batalla].name}}</td>
-                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}
+                                <td v-if="e.isFinal == 1" class="has-text-right" style="white-space:nowrap;">{{e.bandoB.punts}}
                                     <popper
+                                        v-if = "isEditor"  
+                                        :ref="e.id+'B'"
                                         trigger="clickToOpen"
                                         :options="{
                                           placement: 'top',
@@ -181,8 +187,10 @@
                                         </span>
                                     </popper>
                                 </td>
-                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.puntuacio}}
+                                <td v-if="e.isFinal == 1" class="has-text-right" style="white-space:nowrap;">{{e.bandoB.puntuacio}}
                                     <popper
+                                         v-if = "isEditor"
+                                        :ref="e.id+'pB'"
                                         trigger="clickToOpen"
                                         :options="{
                                           placement: 'top',
@@ -283,6 +291,7 @@ export default {
             getConfrontacions: 'getConfrontacions',
             getCampanyaActual:'getCampanyaActual',
             getUsersByCampanyaActual: 'getUsersByCampanyaActual',
+            isEditor: 'isEditor',
         }),
         sortedByPunts() {
           return this.lliga.sort((a, b) => { return b.punts - a.punts;});
@@ -296,15 +305,16 @@ export default {
             getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
             setCampanyaActual: 'setCampanyaActual',
-            updateConfrontacioById: 'updateConfrontacioById',
+            updateCampanyaById: 'updateCampanyaById',
         }),
         submit(id, val, attr){
-            console.log(this.$refs[id]);
+            console.log(id);
+            console.log(this.$refs[id + attr][0]);
             let obj = {};
             obj['id'] = id;
             obj[attr] = val
-            this.updateConfrontacioById(obj);
-            this.$refs[id][0].hide();
+            this.updateCampanyaById(obj);
+            this.$refs[id + attr][0].doClose();
             
         },
         calculsByBando(){

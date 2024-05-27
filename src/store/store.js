@@ -169,7 +169,7 @@ export default new Vuex.Store({
                 state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pA;
             }
             if (obj.hasOwnProperty('pB')){
-                state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pB;
+                state.confrontacions[itemIndex]['bandoB']['puntuacio'] = obj.pB;
             }
         },
     },
@@ -191,9 +191,6 @@ export default new Vuex.Store({
         },
         puntuaConfrontacioById({commit}, obj){
             commit('puntuaConfrontacio', obj);
-        },
-        updateConfrontacioById({commit}, obj){
-            commit('updateConfrontacio', obj);
         },
         setCampanyaActual({commit, state}, campanyaId){
             let self = this;
@@ -289,6 +286,35 @@ export default new Vuex.Store({
                     }
                 }
             }
+        },
+        async updateCampanyaById({commit, state}, obj){
+            commit('updateConfrontacio', obj);
+
+            let params = '?id='+obj.id;
+            let attr='';
+            let value=0;
+            if (obj.hasOwnProperty('A')){
+                attr = 'A';
+                value = obj.A;
+            }
+            if (obj.hasOwnProperty('B')){
+                attr = 'B';
+                value = obj.B;
+            }
+            if (obj.hasOwnProperty('pA')){
+                attr = 'pA';
+                value = obj.pA;
+            }
+            if (obj.hasOwnProperty('pB')){
+                attr = 'pB';
+                value = obj.pB;
+            }
+            params = params + '&attr=' + attr + "&value=" + value;
+            const posts = await axios.get(`https://historic.irregularesplanb.com/php/editConfrontacioById.php` + params);
+            if (posts.data) {
+                console.log(posts.data);
+            }
+
         },
 
     },
