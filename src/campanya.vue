@@ -118,14 +118,90 @@
                             <tr v-for="e in grouped_display[element]" :class="e.bandoA.puntuacio == null ? 'has-background-warning' : ''">
                                 <td v-if="e.isFinal == 1">{{e.bandoA.name}}</td>
                                 <td v-if="e.isFinal == 1">{{e.bandoA.puntuacio}}
-                                    <span class="icon is-small" @click="openModal()">
-                                        <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
-                                    </span>
+                                    <popper :ref="e.id"
+                                        trigger="clickToOpen"
+                                        :options="{
+                                          placement: 'top',
+                                          modifiers: { offset: { offset: '0,10px' } }
+                                        }">
+
+
+                                        <div class="popper">
+                                          <div class="field has-addons">
+                                              <div class="control">
+                                                <input class="input is-small" type="text" placeholder="" :value="e.bandoA.puntuacio" @keyup.enter="submit(e.id, $event.target.value, 'pA')">
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <span class="icon is-small" slot="reference"">
+                                            <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
+                                        </span>
+                                    </popper>
                                 </td>
-                                <td v-if="e.isFinal == 1">{{e.bandoA.punts}} </td>
+                                <td v-if="e.isFinal == 1">{{e.bandoA.punts}}
+                                    <popper
+                                        trigger="clickToOpen"
+                                        :options="{
+                                          placement: 'top',
+                                          modifiers: { offset: { offset: '0,10px' } }
+                                        }">
+
+
+                                        <div class="popper">
+                                          <div class="field has-addons">
+                                              <div class="control">
+                                                <input class="input is-small" type="text" placeholder="" :value="e.bandoA.punts" @keyup.enter="submit(e.id, $event.target.value, 'A')">
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <span class="icon is-small" slot="reference"">
+                                            <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
+                                        </span>
+                                    </popper>
+                                </td>
                                 <td v-if="e.isFinal == 1" class="has-text-centered">{{batalles[e.id_batalla].name}}</td>
-                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}</td>
-                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.puntuacio}} </td>
+                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.punts}}
+                                    <popper
+                                        trigger="clickToOpen"
+                                        :options="{
+                                          placement: 'top',
+                                          modifiers: { offset: { offset: '0,10px' } }
+                                        }">
+
+
+                                        <div class="popper">
+                                          <div class="field has-addons">
+                                              <div class="control">
+                                                <input class="input is-small" type="text" placeholder="" :value="e.bandoB.punts" @keyup.enter="submit(e.id, $event.target.value, 'B')">
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <span class="icon is-small" slot="reference"">
+                                            <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
+                                        </span>
+                                    </popper>
+                                </td>
+                                <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.puntuacio}}
+                                    <popper
+                                        trigger="clickToOpen"
+                                        :options="{
+                                          placement: 'top',
+                                          modifiers: { offset: { offset: '0,10px' } }
+                                        }">
+
+
+                                        <div class="popper">
+                                          <div class="field has-addons">
+                                              <div class="control">
+                                                <input class="input is-small" type="text" placeholder="" :value="e.bandoB.puntuacio" @keyup.enter="submit(e.id, $event.target.value, 'pB')">
+                                              </div>
+                                            </div>
+                                        </div>
+                                        <span class="icon is-small" slot="reference"">
+                                            <svg-icon :size="8" type="mdi" :path="editIcon"></svg-icon>
+                                        </span>
+                                    </popper>
+                                </td>
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.name}}</td>
                             </tr>
                         </tbody>
@@ -140,6 +216,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import SvgIcon from '@jamescoyle/vue-icon'
 import { mdiPencil } from '@mdi/js'
+  import Popper from 'vue-popperjs';
 
 
 
@@ -153,6 +230,7 @@ export default {
     name: 'campanya',
     components: {
         SvgIcon,
+        Popper,
     },
     data: function(){
         return{
@@ -218,7 +296,17 @@ export default {
             getConfrontacionsByCampanyaIdFromDB: 'getConfrontacionsByCampanyaIdFromDB',
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
             setCampanyaActual: 'setCampanyaActual',
+            updateConfrontacioById: 'updateConfrontacioById',
         }),
+        submit(id, val, attr){
+            console.log(this.$refs[id]);
+            let obj = {};
+            obj['id'] = id;
+            obj[attr] = val
+            this.updateConfrontacioById(obj);
+            this.$refs[id][0].hide();
+            
+        },
         calculsByBando(){
             let self = this;
             for (const f of this.getConfrontacions){
@@ -352,6 +440,8 @@ export default {
 
 <style lang="scss">
 @import "./scss/estil.scss";
+@import 'vue-popperjs/dist/vue-popper.css';
+
 
 .campanya {
     .title a {

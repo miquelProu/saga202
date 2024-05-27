@@ -147,7 +147,31 @@ export default new Vuex.Store({
             state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pA;
             state.confrontacions[itemIndex]['bandoB']['puntuacio'] = obj.pB;
         },
-        
+        finalizeConfrontacio(state, obj) {
+            // Find index of the item to be updated
+            //console.log("FINALIZE",obj)
+            const itemIndex = state.confrontacions.findIndex(x => x.id == obj.id);
+            state.confrontacions[itemIndex]['isFinal'] = "1";
+            state.confrontacions[itemIndex]['bandoA']['punts'] = obj.pA;
+            state.confrontacions[itemIndex]['bandoB']['punts'] = obj.pB;
+        },
+        updateConfrontacio(state, obj) {
+            // Find index of the item to be updated
+            //console.log("FINALIZE",obj)
+            const itemIndex = state.confrontacions.findIndex(x => x.id == obj.id);
+            if (obj.hasOwnProperty('A')){
+                state.confrontacions[itemIndex]['bandoA']['punts'] = obj.A;
+            }
+            if (obj.hasOwnProperty('B')){
+                state.confrontacions[itemIndex]['bandoB']['punts'] = obj.B;
+            }
+            if (obj.hasOwnProperty('pA')){
+                state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pA;
+            }
+            if (obj.hasOwnProperty('pB')){
+                state.confrontacions[itemIndex]['bandoA']['puntuacio'] = obj.pB;
+            }
+        },
     },
     actions:{
         refreshConfrontacionsByTorn({commit, state}){
@@ -167,6 +191,9 @@ export default new Vuex.Store({
         },
         puntuaConfrontacioById({commit}, obj){
             commit('puntuaConfrontacio', obj);
+        },
+        updateConfrontacioById({commit}, obj){
+            commit('updateConfrontacio', obj);
         },
         setCampanyaActual({commit, state}, campanyaId){
             let self = this;

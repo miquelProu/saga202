@@ -15,6 +15,7 @@
     "js-md5": "^0.8.3",
     "vue": "^2.6.14",
     "vue-mq": "^1.0.1",
+    "vue-popperjs": "^2.3.0",
     "vue-router": "^3.5.1",
     "vuedraggable": "^2.24.3",
     "vuex-persistedstate": "^4.1.0"
