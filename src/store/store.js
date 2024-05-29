@@ -106,6 +106,7 @@ export default new Vuex.Store({
         },
         logOut(state){
             state.userKind = null;
+            state.campanyes = [];
         },
         populateUSers(state, users){
             state.users = users;
@@ -121,6 +122,11 @@ export default new Vuex.Store({
         },
         pushCampanya(state, campanya){
             state.campanyes.push(campanya);
+        },
+        delCampanya(state, id){
+            const itemIndex = state.campanyes.findIndex(x => x.id == id);
+            console.log(state.campanyes[itemIndex]);
+            state.campanyes.splice(itemIndex, 1);
         },
         pushUser(state, user){
             state.users.push(user);
@@ -200,6 +206,13 @@ export default new Vuex.Store({
                     }
                 }
         },
+        async deleteCampanya({commit}, id){
+            commit('delCampanya', id);
+            const posts = await axios.get('https://historic.irregularesplanb.com/php/deleteCampanya.php?id='+id);
+            if(posts.data){
+                console.log(posts.data);
+            }
+        },
         async saveUser({commit, state}, nom){
             const posts = await axios.get('https://historic.irregularesplanb.com/php/setUser.php?nom='+nom);
             if(posts.data){
@@ -251,6 +264,7 @@ export default new Vuex.Store({
             }
         },
         async getCampanyesFromDB({commit, state}){
+            console.log(state.campanyes);
             if (state.campanyes.length == 0) {
                 let temp = [];
                 const posts = await axios.get(`https://historic.irregularesplanb.com/php/getCampanyes.php`)

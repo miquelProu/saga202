@@ -60,7 +60,7 @@ Aquí tenim tota la informació de la campanya, els punts per bàndol i per gene
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
 import axios from 'axios';
-import {mapGetters} from "vuex";
+import {mapGetters, mapActions} from "vuex";
 
 export default {
     name: 'HomeView',
@@ -75,8 +75,17 @@ export default {
             getCampanyes: 'getCampanyes'
         }),
     },
+    methods: {
+        ...mapActions({
+            getCampanyesFromDB: 'getCampanyesFromDB'
+        }),
+    },
     mounted: function(){
         console.log("HOLA HOME");
+        this.getCampanyesFromDB().then(() => {
+            console.log("GET CAMPANYES FROM DB TROUGHT THE STORE");
+            console.log(this.getCampanyes);
+        });
     }
 }
 </script>

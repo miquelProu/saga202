@@ -1,7 +1,41 @@
 <template>
     <section class="campanya">
         <div class="container " style="margin-bottom:40px;">
-            <div class="cinzel-regular title is-size-4 has-text-centered"><span class="is-size-2">{{getCampanyaActual.nom}}</span></div>
+            <div class="cinzel-regular title is-size-4 has-text-centered">
+                <span class="is-size-2">{{getCampanyaActual.nom}}</span>
+
+                <popper 
+                    v-if = "isEditor"
+                    ref="deletePopper"
+                    trigger="clickToOpen"
+                    :options="{
+                      placement: 'top',
+                      modifiers: { offset: { offset: '0,10px' } }
+                    }">
+
+
+                    <div class="popper">
+                        <label class="has-text-weight-bold is-size-5">Segur ?</label>
+                      <div class="field has-addons">
+                          <p class="control">
+                            <button class="button is-success" @click="esborrarCampanya">
+                              Sí
+                            </button>
+                          </p>
+                          <p class="control">
+                            <button class="button is-danger" @click="$refs.deletePopper.doClose();">
+                              No
+                            </button>
+                          </p>
+                        </div>
+                    </div>
+                    <span class="icon has-text-danger" slot="reference"" xstyle="color:red;">
+                        <svg-icon :size="24" type="mdi" :path="deleteIcon"></svg-icon>
+                    </span>
+                </popper>
+
+                
+            </div>
         </div>
         <div class="container" v-if="lliga.length > 0 && (getCampanyaActual.bandols * 1) > 1">
             <div class="cinzel-regular title is-size-4 has-text-centered">Puntuació</div>
@@ -223,7 +257,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import SvgIcon from '@jamescoyle/vue-icon'
-import { mdiPencil } from '@mdi/js'
+import { mdiPencil, mdiDeleteForever } from '@mdi/js'
   import Popper from 'vue-popperjs';
 
 
@@ -244,6 +278,7 @@ export default {
         return{
             torns: null,
             editIcon: mdiPencil,
+            deleteIcon: mdiDeleteForever,
             isModal: false,
             grouped_display: [],
             isCalculat: false,
@@ -306,6 +341,7 @@ export default {
             getUsuarisByCampanyaIdFromDB: 'getUsuarisByCampanyaIdFromDB',
             setCampanyaActual: 'setCampanyaActual',
             updateCampanyaById: 'updateCampanyaById',
+            deleteCampanya: 'deleteCampanya',
         }),
         submit(id, val, attr){
             console.log(id);
@@ -316,6 +352,10 @@ export default {
             this.updateCampanyaById(obj);
             this.$refs[id + attr][0].doClose();
             
+        },
+        esborrarCampanya(){
+            this.deleteCampanya(this.campanya_id);
+            this.$router.push({ name: 'home' });
         },
         calculsByBando(){
             let self = this;

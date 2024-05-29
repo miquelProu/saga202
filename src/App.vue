@@ -124,7 +124,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
         },
         clearStorage(){
           this.logOutStore();
-          window.localStorage.removeItem('vuex');
+          window.localStorage.clear();
           this.$router.push("/login");
         },
         start(){
@@ -137,7 +137,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
         },
     },
     created: function(){
-      //this.start();
+      this.start();
     },
     mounted: function(){
       this.start();
