@@ -143,7 +143,7 @@
                     <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
-                                <td colspan="9" class="has-text-centered">
+                                <td :colspan="(isEditor) ? '9' : '8'" class="has-text-centered">
                                 <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
@@ -247,34 +247,33 @@
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.name}}</td>
                                 <td>
                                     <popper 
-                    v-if = "isEditor"
-                    :ref="'delConf'+e.id"
-                    trigger="clickToOpen"
-                    :options="{
-                      placement: 'top',
-                      modifiers: { offset: { offset: '0,10px' } }
-                    }">
+                                        v-if = "isEditor"
+                                        :ref="'delConf'+e.id"
+                                        trigger="clickToOpen"
+                                        :options="{
+                                          placement: 'top',
+                                          modifiers: { offset: { offset: '0,10px' } }
+                                        }">
 
-
-                    <div class="popper">
-                        <label class="has-text-weight-bold is-size-5">Segur ?</label>
-                      <div class="field has-addons">
-                          <p class="control">
-                            <button class="button is-success" @click="esborrarConfrontacio(e.id)">
-                              Sí
-                            </button>
-                          </p>
-                          <p class="control">
-                            <button class="button is-danger" @click="$refs['delConf'+e.id][0].doClose();">
-                              No
-                            </button>
-                          </p>
-                        </div>
-                    </div>
-                    <span class="icon has-text-danger" slot="reference"" xstyle="color:red;">
-                        <svg-icon :size="24" type="mdi" :path="deleteIcon"></svg-icon>
-                    </span>
-                </popper>
+                                        <div class="popper">
+                                            <label class="has-text-weight-bold is-size-5">Segur ?</label>
+                                          <div class="field has-addons">
+                                              <p class="control">
+                                                <button class="button is-success" @click="esborrarConfrontacio(e.id)">
+                                                  Sí
+                                                </button>
+                                              </p>
+                                              <p class="control">
+                                                <button class="button is-danger" @click="$refs['delConf'+e.id][0].doClose();">
+                                                  No
+                                                </button>
+                                              </p>
+                                            </div>
+                                        </div>
+                                        <span class="icon has-text-danger" slot="reference"" xstyle="color:red;">
+                                            <svg-icon :size="24" type="mdi" :path="deleteIcon"></svg-icon>
+                                        </span>
+                                    </popper>
                                 </td>
                             </tr>
                         </tbody>
@@ -296,7 +295,10 @@ import { mdiPencil, mdiDeleteForever } from '@mdi/js'
 /**
  * TODO: Mirar si el getUsuarisByCampanyaIdFromDB del final de la carrega servei per algo
  * o ens apanyem amb el que ja tenim. Els users han de venir de les confrontacions, i sinó
- * n'hi han, no els calen els noms aquí
+ * n'hi han, no els calen els noms aquí.
+ * 
+ * EL grouped_display hauria de ser un computed sino no s'enterà dels canvis quan esborres 
+ * confronatcions, ara faig un kludge fent un start()
  * */
 
 export default {
@@ -374,7 +376,8 @@ export default {
             updateCampanyaById: 'updateCampanyaById',
             deleteCampanya: 'deleteCampanya',
             deleteConfrontacio: 'deleteConfrontacio',
-            getCampanyesFromDB: 'getCampanyesFromDB'
+            getCampanyesFromDB: 'getCampanyesFromDB',
+            refreshConfrontacionsByTorn: 'refreshConfrontacionsByTorn'
         }),
         submit(id, val, attr){
             console.log(id);
@@ -391,11 +394,10 @@ export default {
             this.$router.push({ name: 'home' });
         },
         esborrarConfrontacio(id){
-            console.log(this.$refs['delConf'+id]);
-            
+            //console.log(this.$refs['delConf'+id]);
             this.$refs['delConf'+id][0].doClose();
             this.deleteConfrontacio(id);
-            //this.$router.go();
+            this.start();
         },
         calculsByBando(){
             let self = this;
@@ -508,6 +510,7 @@ export default {
                 this.punts_bando_A = 0;
                 this.punts_bando_B = 0;
                 this.maxs = [];
+                this.lliga= [];
                 self.calculsByBando();
                 self.calculsByLliga();
             });

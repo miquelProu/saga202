@@ -106,8 +106,8 @@ export default new Vuex.Store({
         },
         logOut(state){
             state.userKind = null;
-            state.campanyes = [];
-            state.confrontacions = [];
+          //  state.campanyes = [];
+          //  state.confrontacions = [];
         },
         populateUSers(state, users){
             state.users = users;
@@ -265,6 +265,7 @@ export default new Vuex.Store({
 
         },
         async getConfrontacionsByCampanyaIdFromDB({commit, state}, campanyaId){
+            console.log(campanyaId, state.campanyaActual && campanyaId != state.campanyaActual.id);
             if (state.campanyaActual && campanyaId != state.campanyaActual.id){
                 const posts = await axios.get(`https://historic.irregularesplanb.com/php/getControntacioByCampanyaIdv2.php?id=` + campanyaId)
                 if (posts.data) {

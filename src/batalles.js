@@ -15,7 +15,7 @@ export const batallesFile = [
     {name: "Proyección de fuerza", id: 13, joc: 'clash'},
     {name: "Rescate", id: 14, joc: 'clash'},
     {name: "REX", id: 15, joc: 'saga'},
-    {name: "Desafio REX", id: 15, joc: 'saga'},
+    {name: "Desafio REX", id: 16, joc: 'saga'},
 ];
 
 
