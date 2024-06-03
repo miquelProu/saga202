@@ -107,6 +107,7 @@ export default new Vuex.Store({
         logOut(state){
             state.userKind = null;
             state.campanyes = [];
+            state.confrontacions = [];
         },
         populateUSers(state, users){
             state.users = users;
@@ -127,6 +128,11 @@ export default new Vuex.Store({
             const itemIndex = state.campanyes.findIndex(x => x.id == id);
             console.log(state.campanyes[itemIndex]);
             state.campanyes.splice(itemIndex, 1);
+        },
+        delConfrontacio(state, id){
+            const itemIndex = state.confrontacions.findIndex(x => x.id == id);
+            console.log(state.confrontacions[itemIndex]);
+            state.confrontacions.splice(itemIndex, 1);
         },
         pushUser(state, user){
             state.users.push(user);
@@ -209,6 +215,17 @@ export default new Vuex.Store({
         async deleteCampanya({commit}, id){
             commit('delCampanya', id);
             const posts = await axios.get('https://historic.irregularesplanb.com/php/deleteCampanya.php?id='+id);
+            if(posts.data){
+                console.log(posts.data);
+            }
+        },
+        async deleteConfrontacio({commit}, id){
+            commit('delConfrontacio', id);
+            console.log(id);
+            console.log('https://historic.irregularesplanb.com/php/deleteConfrontacio.php?id='+id)
+
+
+            const posts = await axios.get('https://historic.irregularesplanb.com/php/deleteConfrontacio.php?id='+id);
             if(posts.data){
                 console.log(posts.data);
             }

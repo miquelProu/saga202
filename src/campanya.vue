@@ -143,7 +143,7 @@
                     <table class="table is-striped is-fullwidth">
                         <thead>
                             <tr>
-                                <td colspan="8" class="has-text-centered">
+                                <td colspan="9" class="has-text-centered">
                                 <router-link :to="{ name: 'confrontacions', params: { campanya_id: campanya_id, torn: element} }">Torn {{element}}</router-link>
                                 </td>
                             </tr>
@@ -245,6 +245,37 @@
                                     </popper>
                                 </td>
                                 <td v-if="e.isFinal == 1" class="has-text-right">{{e.bandoB.name}}</td>
+                                <td>
+                                    <popper 
+                    v-if = "isEditor"
+                    :ref="'delConf'+e.id"
+                    trigger="clickToOpen"
+                    :options="{
+                      placement: 'top',
+                      modifiers: { offset: { offset: '0,10px' } }
+                    }">
+
+
+                    <div class="popper">
+                        <label class="has-text-weight-bold is-size-5">Segur ?</label>
+                      <div class="field has-addons">
+                          <p class="control">
+                            <button class="button is-success" @click="esborrarConfrontacio(e.id)">
+                              Sí
+                            </button>
+                          </p>
+                          <p class="control">
+                            <button class="button is-danger" @click="$refs['delConf'+e.id][0].doClose();">
+                              No
+                            </button>
+                          </p>
+                        </div>
+                    </div>
+                    <span class="icon has-text-danger" slot="reference"" xstyle="color:red;">
+                        <svg-icon :size="24" type="mdi" :path="deleteIcon"></svg-icon>
+                    </span>
+                </popper>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -342,6 +373,8 @@ export default {
             setCampanyaActual: 'setCampanyaActual',
             updateCampanyaById: 'updateCampanyaById',
             deleteCampanya: 'deleteCampanya',
+            deleteConfrontacio: 'deleteConfrontacio',
+            getCampanyesFromDB: 'getCampanyesFromDB'
         }),
         submit(id, val, attr){
             console.log(id);
@@ -356,6 +389,13 @@ export default {
         esborrarCampanya(){
             this.deleteCampanya(this.campanya_id);
             this.$router.push({ name: 'home' });
+        },
+        esborrarConfrontacio(id){
+            console.log(this.$refs['delConf'+id]);
+            
+            this.$refs['delConf'+id][0].doClose();
+            this.deleteConfrontacio(id);
+            //this.$router.go();
         },
         calculsByBando(){
             let self = this;
@@ -458,6 +498,10 @@ export default {
                     //self.mans_usual = self.grouped_display[t[0]].length;
                     //console.log("MAns USUAL", self.mans_usual);
                 } else {
+                    this.getCampanyesFromDB().then(() => {
+                        console.log("GET CAMPANYES FROM DB TROUGHT THE STORE");
+                        console.log(this.getCampanyes);
+                    });
                     self.grouped_display = [];
                 }
                 this.isCalculat = false;
