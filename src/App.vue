@@ -123,15 +123,13 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
           this.$router.push("/login");
         },
         clearStorage(){
-          //this.logOutStore();
-          //window.localStorage.clear();
-          //;
+          this.logOutStore();
+          this.$router.push("/login");
           const vuex = JSON.parse(localStorage.getItem('vuex'));
-                    console.log(vuex);
-
+          console.log(vuex);
           localStorage.clear('vuex');
           console.log(JSON.parse(localStorage.getItem('vuex')));
-          this.$router.push("/login")
+
         },
         start(){
           //if (this.isLogged){
