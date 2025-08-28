@@ -63,7 +63,7 @@
                     <div class="tarja columns is-gapless is-mobile nodrag selected"  :class="{ 'noisEditor': !isEditor }" v-for="(element,idx) in batallesColumn" :key="element.idid">
                         <div class="column one-three-fifths">
                             <div class="field">
-                                <p  v-if="element.isFinal == '0'" 
+                                <p  v-if="element.isFinal == '0'"
                                     class="control has-text-centered"
                                 >
                                     <input
